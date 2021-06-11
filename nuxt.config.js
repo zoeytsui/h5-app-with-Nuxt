@@ -37,7 +37,14 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
+    // https://go.nuxtjs.dev/content
+    '@nuxt/content',
+    // https://i18n.nuxtjs.org
+    'nuxt-i18n',
   ],
+  
+  // Content module configuration: https://go.nuxtjs.dev/config-content
+  content: {},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
