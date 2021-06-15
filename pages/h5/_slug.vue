@@ -1,9 +1,10 @@
 <template>
-  <article class="text-center">
+  <article class="text-left">
     <!-- <NuxtLink :to="`#${link.id}`">{{ link.text }}</NuxtLink> -->
+    <!-- <p>{{ $t('messages.hi') }}</p> -->
 
-    <h1>{{ page.title }}</h1>
-    <p>{{ page.Q1.ques }}</p>
+    <h1>{{ textGenerator('TITLE') }}</h1>
+    <p>{{ QUEST }}</p>
 
     <nuxt-content :document="page" />
   </article>
@@ -11,12 +12,33 @@
 
 <script>
 export default {
-  async asyncData({ $content, params, error }) {
+  data() {
+    return {
+      TITLE: null,
+      QUEST: null
+    };
+  },
+  async asyncData({ $content, params, app, i18n, error }) {
+    const lang = i18n.getLocaleCookie();
     const page = await $content("docs", params.slug).fetch();
-    console.log("contentPage", page);
+      // .then((res, rej) => {
+      //   res.body.map(content => {
+      //     console.log("content", content);
+      //     // for (const [key, value] of Object.entries(content)) {
+      //     if (content.KEY === "TITLE") {
+      //       // console.log(TITLE);
+      //       console.log(app);
+      //     }
+      //   });
+      // });
+    // controll[0].generator();
     return { page };
   },
   methods: {
+    textGenerator(tag) {
+      console.log('tag', tag);
+      console.log('this', this);
+    },
     formatDate(date) {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return new Date(date).toLocaleDateString("en", options);
@@ -26,6 +48,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .nuxt-content {
+  padding: 2rem;
   h2 {
     font-weight: bold;
     font-size: 28px;

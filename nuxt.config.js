@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'ucenter.9999server.com',
+    title: 'ucenter.9999server',
     htmlAttrs: {
       lang: 'en'
     },
@@ -42,14 +42,27 @@ export default {
     // https://i18n.nuxtjs.org
     'nuxt-i18n',
   ],
-  
+
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en',
+    // vueI18n: {
+    //   fallbackLocale: 'en',
+    //   en: {
+    //     messages: {
+    //       hi: 'hihihi'
+    //     }
+    //   }
+    // }
+  },
+
   // Content module configuration: https://go.nuxtjs.dev/config-content
   content: {},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
-  
+
   server: {
     host: process.env.DEV_HOST,
     port: process.env.DEV_PORT
