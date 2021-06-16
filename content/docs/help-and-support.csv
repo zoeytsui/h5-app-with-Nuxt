@@ -1,6 +1,20 @@
-KEY,en,sv
-TITLE,FAQ:,L?gg till ett lag
-QUES_1,Do I need to register with a mobile number?,L?gg till
-ANS_1,"In app, only email is needed to complete registration.",L?gg till spelare
-QUES_2,Can I change login email?,L?gg till produkt
-ANS_2,"No, you cannot.",L?GG TILL F?RS?LJNING
+KEY,EN
+TITLE,FAQ
+QUEST_1,Do I need to register with a mobile number?
+ANS_1,"In app, only email is needed to complete registration."
+QUEST_2,Can I change login email?
+ANS_2,"No, you cannot."
+QUEST_3,How can I trade?
+QUEST_4,How can I deposit?
+QUEST_5,How can I withdraw?
+QUEST_6,How can I change my login password?
+QUEST_7,How can I change my fund password?
+QUEST_8,What is the minimum amount of withdrawal per request?
+QUEST_9,Is there any fee to the deposit or withdrawal?
+ANS_3,"In trading page, you may press ""Sell"" or ""Buy"" Button to trade."
+ANS_4,You may press the deposit button on the top right corner on the trading page or you may find it in my Wallet.
+ANS_5,You may go to my Wallet to press withdrawal.
+ANS_6,You may go to menu and press change login password.
+ANS_7,You may go to menu and press change fund password.
+ANS_8,There is no minimum amount for withdrawal request.
+ANS_9,"No extra fee is necessary for deposit, but withdrawal fee will be charged for each request."

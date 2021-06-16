@@ -47,17 +47,13 @@ export default {
     locales: ['en'],
     defaultLocale: 'en',
     // vueI18n: {
-    //   fallbackLocale: 'en',
-    //   en: {
-    //     messages: {
-    //       hi: 'hihihi'
-    //     }
-    //   }
     // }
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content
-  content: {},
+  content: {
+    liveEdit: false
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

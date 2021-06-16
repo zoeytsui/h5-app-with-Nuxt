@@ -1,61 +1,82 @@
 <template>
-  <article class="text-left">
+  <div id="slug" class="text-left">
     <!-- <NuxtLink :to="`#${link.id}`">{{ link.text }}</NuxtLink> -->
-    <!-- <p>{{ $t('messages.hi') }}</p> -->
+    <h2>{{ page.title }}</h2>
 
-    <h1>{{ textGenerator('TITLE') }}</h1>
-    <p>{{ QUEST }}</p>
-
-    <nuxt-content :document="page" />
-  </article>
+    <ol class="list-group">
+      <li v-for="question,index in page.list.questions" :key="index">{{ question }}
+          <p>{{ page.list.answers[index] }}</p>
+      </li>
+    </ol>
+    <!-- <nuxt-content :document="content" /> -->
+  </div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      TITLE: null,
-      QUEST: null
+      page: {
+        title: null,
+        list: {
+          questions: [],
+          answers: []
+        }
+      }
     };
   },
-  async asyncData({ $content, params, app, i18n, error }) {
+  async asyncData({ $content, params, i18n }) {
     const lang = i18n.getLocaleCookie();
-    const page = await $content("docs", params.slug).fetch();
-      // .then((res, rej) => {
-      //   res.body.map(content => {
-      //     console.log("content", content);
-      //     // for (const [key, value] of Object.entries(content)) {
-      //     if (content.KEY === "TITLE") {
-      //       // console.log(TITLE);
-      //       console.log(app);
-      //     }
-      //   });
-      // });
-    // controll[0].generator();
-    return { page };
+    const content = await $content("docs", params.slug).fetch();
+    return { content, lang };
+  },
+  created() {
+    this._contentHandler(this.content.body);
   },
   methods: {
-    textGenerator(tag) {
-      console.log('tag', tag);
-      console.log('this', this);
-    },
-    formatDate(date) {
-      const options = { year: "numeric", month: "long", day: "numeric" };
-      return new Date(date).toLocaleDateString("en", options);
+    async _contentHandler(keyArr) {
+      const capitalLang = this.lang.toUpperCase();
+      for (let i in keyArr) {
+        Object.keys(keyArr[i]).forEach(k => k.toUpperCase());
+        let keyVal = keyArr[i].KEY;
+        switch (true) {
+          case keyVal === "TITLE":
+            this.page.title = keyArr[i][`${capitalLang}`];
+            break;
+          case keyVal.includes("QUEST"): {
+            this.page.list.questions.push(keyArr[i][`${capitalLang}`]);
+            break;
+          }
+          case keyVal.includes("ANS"): {
+            this.page.list.answers.push(keyArr[i][`${capitalLang}`]);
+            break;
+          }
+        }
+      }
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-.nuxt-content {
+#slug {
   padding: 2rem;
   h2 {
     font-weight: bold;
     font-size: 28px;
   }
-  h3 {
+  ol {
+    counter-reset: quest;
+    list-style: none;
     font-weight: bold;
-    font-size: 22px;
+  }
+  li {
+    counter-increment: quest;
+    p{
+      font-weight: normal;
+    }
+  }
+  li::before {
+    content: "Q" counter(quest) ": ";
   }
   p {
     margin-bottom: 20px;
