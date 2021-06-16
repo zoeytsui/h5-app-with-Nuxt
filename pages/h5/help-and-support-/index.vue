@@ -1,10 +1,10 @@
 <template>
-  <div id="slug">
-    <h2 class="text-center">{{ page.title }}</h2>
-    <p class="text-right">{{ page.date }}</p>
+  <div id="slug" class="text-left">
+    <h2>{{ page.title }}</h2>
+
     <ol class="list-group">
       <li v-for="question,index in page.list.questions" :key="index">{{ question }}
-        <p>{{ page.list.answers[index] }}</p>
+          <p>{{ page.list.answers[index] }}</p>
       </li>
     </ol>
   </div>
@@ -16,7 +16,6 @@ export default {
     return {
       page: {
         title: null,
-        date: null,
         list: {
           questions: [],
           answers: []
@@ -24,9 +23,9 @@ export default {
       }
     };
   },
-  async asyncData({ $content, params, i18n }) {
+  async asyncData({ $content, params, i18n, app }) {
     const lang = i18n.getLocaleCookie();
-    const content = await $content("docs", params.slug).fetch();
+    const content = await $content("docs/help-and-support").fetch();
     return { content, lang };
   },
   created() {
@@ -41,9 +40,6 @@ export default {
         switch (true) {
           case keyVal === "TITLE":
             this.page.title = keyArr[i][`${capitalLang}`];
-            break;
-          case keyVal === "DATE":
-            this.page.date = keyArr[i][`${capitalLang}`];
             break;
           case keyVal.includes("QUEST"): {
             this.page.list.questions.push(keyArr[i][`${capitalLang}`]);
@@ -67,15 +63,21 @@ export default {
     font-size: 28px;
   }
   ol {
+    counter-reset: quest;
+    list-style: none;
     font-weight: bold;
-    li {
-      p {
-        font-weight: normal;
-        text-align: justify;
-        text-justify: inter-word;
-        margin-bottom: 20px;
-      }
+  }
+  li {
+    counter-increment: quest;
+    p{
+      font-weight: normal;
     }
+  }
+  li::before {
+    content: "Q" counter(quest) ": ";
+  }
+  p {
+    margin-bottom: 20px;
   }
 }
 </style>

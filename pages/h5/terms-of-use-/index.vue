@@ -26,7 +26,7 @@ export default {
   },
   async asyncData({ $content, params, i18n }) {
     const lang = i18n.getLocaleCookie();
-    const content = await $content("docs", params.slug).fetch();
+    const content = await $content("docs/terms-of-use").fetch();
     return { content, lang };
   },
   created() {
@@ -72,7 +72,6 @@ export default {
       p {
         font-weight: normal;
         text-align: justify;
-        text-justify: inter-word;
         margin-bottom: 20px;
       }
     }
