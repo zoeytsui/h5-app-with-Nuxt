@@ -1,6 +1,8 @@
 KEY,EN
 TITLE,Terms of Use
 DATE,"Last updated: 10 June, 2021"
+CHECKBOX_TEXT,I accept the Terms of Use
+BUTTON_TEXT,Press to Continue
 QUEST_1,Internet Failure
 ANS_1,"Since Speedmarket does not have the ability to control signal data, the stability of signal data transmission over the Internet depends on the reliability of the structure or connection of the client device and internet service provider. Speedmarket is not responsible for the distortion or delay of communication failures occurring in transactions on the Internet."
 QUEST_2,Market Risk and Online Trading

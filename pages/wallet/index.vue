@@ -1,5 +1,6 @@
 <template>
   <div id="slug">
+      <p>wallet<p>
     <h2 class="text-center">{{ page.title }}</h2>
     <p class="text-right">{{ page.date }}</p>
     <ol class="list-group">

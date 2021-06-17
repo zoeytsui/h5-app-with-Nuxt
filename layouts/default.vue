@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="layout">
     <Nuxt />
   </div>
 </template>
@@ -29,6 +29,10 @@ html {
 *::after {
   box-sizing: border-box;
   margin: 0;
+}
+
+#layout {
+  background: #1b2831;
 }
 
 .button--green {
