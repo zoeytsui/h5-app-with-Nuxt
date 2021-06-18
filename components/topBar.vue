@@ -22,6 +22,6 @@ export default {
     color: #fff;
     height: 6%;
     box-sizing: content-box;
-    box-shadow: 0px 44px 3px -41px #2beae2;
+    box-shadow: 0px 34px 0px -33px #25d6cd54;
 }
 </style>
