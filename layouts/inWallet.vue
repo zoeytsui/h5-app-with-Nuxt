@@ -1,5 +1,7 @@
 <template>
     <div id="layout">
+        <TopBar />
+        <TotalBalance />
         <Nuxt />
     </div>
 </template>
@@ -28,6 +30,8 @@ html {
     background: url("~assets/Rectangle.png") no-repeat center;
     background-attachment: fixed;
     background-size: cover;
+    height: 100vh;
+    width: 100%;
 }
 
 .button--green {

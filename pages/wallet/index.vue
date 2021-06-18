@@ -13,6 +13,7 @@
 
 <script>
 export default {
+    layout: 'inWallet',
   data() {
     return {
       page: {
