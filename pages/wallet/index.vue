@@ -1,8 +1,7 @@
 <template>
     <div id="slug">
         <b-list-group class="mr-auto ml-auto justify-content-between ">
-            <b-list-group-item v-bind:href="links[index] " v-for="text,index in texts" :key="index"
-            class="d-flex align-items-center justify-content-center border-right-0 border-left-0 px-0">
+            <b-list-group-item v-bind:href="'wallet/' + links[index] " v-for="text,index in texts" :key="index" class="d-flex align-items-center justify-content-center border-right-0 border-left-0 px-0">
                 <div class="container d-flex align-items-center">
                     <img v-bind:src="require(`@/assets/${imgs[index]}`)" class="mr-3" width="35px" />
                     <h4>{{ text }}</h4>
@@ -15,12 +14,12 @@
 
 <script>
 export default {
-    layout: "inWallet",
+    layout: "myWallet",
     data() {
         return {
             imgs: [],
             texts: [],
-            links:[],
+            links: [],
         }
     },
     async asyncData({ $content, params, i18n }) {

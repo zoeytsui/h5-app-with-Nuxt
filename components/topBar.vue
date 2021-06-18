@@ -1,5 +1,5 @@
 <template>
-    <section class="header d-flex align-items-center px-3 py-2 mb-4">
+    <section class="header d-flex align-items-center px-3">
         <img src="~assets/Arrow_l_blue.png" alt="" height="50%" class="">
         <h4 class="">{{position}}</h4>
     </section>
@@ -22,6 +22,5 @@ export default {
     color: #fff;
     height: 6%;
     box-sizing: content-box;
-    box-shadow: 0px 34px 0px -33px #25d6cd54;
 }
 </style>
