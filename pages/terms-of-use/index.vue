@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div id="terms-of-use" class="container">
       <h2 class="text-center">{{ page.title }}</h2>
       <p class="text-right">{{ page.date }}</p>
@@ -13,16 +12,13 @@
 
     <div class="container-fluid">
       <nav class="fixed-bottom navbar navbar-dark">
-        <!-- <div class="container"> -->
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" v-model="checkboxStates" id="checkbox">
-          <label class="form-check-label" for="flexCheckDefault">{{ page.checkbox.caption }}</label>
+          <input class="form-check-input" type="checkbox" v-model="page.checkbox.state" id="checkbox">
+          <label class="form-check-label" for="checkbox">{{ page.checkbox.caption}}</label>
         </div>
-        <button type="button" class="btn btn-info" page.button.state>{{ page.button.caption }}</button>
-        <!-- </div> -->
+        <b-button type="button" class="btn btn-info" :disabled="isButtonDisabled" :href="page.button.url">{{ page.button.caption }}</b-button>
       </nav>
     </div>
-
   </div>
 </template>
 
@@ -43,19 +39,15 @@ export default {
         },
         button: {
           caption: null,
-          state: false
+          disabled: true,
+          url: "./help-and-support"
         }
       }
     };
   },
   computed: {
-    checkboxStates() {
-      console.log(this.page.checkbox.state);
-      return this.page.checkbox.state;
-    },
-    btnStates() {
-      console.log(this.page.button.state);
-      return this.page.button.state;
+    isButtonDisabled() {
+      return this.page.checkbox.state ? false : true;
     }
   },
   async asyncData({ $content, params, i18n }) {
@@ -134,5 +126,4 @@ export default {
     border-color: #2beae2;
   }
 }
-// }
 </style>
