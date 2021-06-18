@@ -40,6 +40,7 @@ export default {
         button: {
           caption: null,
           disabled: true,
+          // TODO: updated url
           url: "./help-and-support"
         }
       }
@@ -76,9 +77,6 @@ export default {
             break;
           }
           case keyVal.includes("ANS"): {
-            if (keyArr[i][`${capitalLang}`].includes("\r\n")) {
-              keyArr[i][`${capitalLang}`].split("\r\n").join("<br />");
-            }
             this.page.list.answers.push(keyArr[i][`${capitalLang}`]);
             break;
           }
@@ -110,6 +108,7 @@ export default {
     font-weight: bold;
     li {
       p {
+        white-space:pre-wrap;
         font-weight: normal;
         text-align: justify;
         margin-bottom: 20px;
