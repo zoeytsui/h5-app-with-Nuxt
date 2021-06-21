@@ -1,5 +1,6 @@
 KEY,EN
-TITLE,FAQ
+TITLE,Help and Support
+DESCRIPTION,FAQ
 QUEST_1,Do I need to register with a mobile number?
 ANS_1,"In app, only email is needed to complete registration."
 QUEST_2,Can I change login email?

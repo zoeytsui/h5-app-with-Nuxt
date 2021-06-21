@@ -16,7 +16,7 @@
           <input class="form-check-input" type="checkbox" v-model="page.checkbox.state" id="checkbox">
           <label class="form-check-label" for="checkbox">{{ page.checkbox.caption}}</label>
         </div>
-        <b-button type="button" class="btn btn-info" :disabled="isButtonDisabled" :href="page.button.url">{{ page.button.caption }}</b-button>
+        <b-button type="button" class="btn btn-info" :disabled="isButtonDisabled" :href="page.button.url">{{ page.button.caption + " >" }}</b-button>
       </nav>
     </div>
   </div>
@@ -51,9 +51,9 @@ export default {
       return this.page.checkbox.state ? false : true;
     }
   },
-  async asyncData({ $content, params, i18n }) {
+  async asyncData({ $content, route, i18n }) {
     const lang = i18n.getLocaleCookie();
-    const content = await $content("docs/terms-of-use").fetch();
+    const content = await $content("docs", route.path).fetch();
     return { content, lang };
   },
   created() {
@@ -108,7 +108,6 @@ export default {
     font-weight: bold;
     li {
       p {
-        white-space:pre-wrap;
         font-weight: normal;
         text-align: justify;
         margin-bottom: 20px;
@@ -123,6 +122,11 @@ export default {
     color: #1b2831;
     background: #2beae2;
     border-color: #2beae2;
+  }
+  .form-check{
+    label{
+      text-decoration: underline;
+    }
   }
 }
 </style>

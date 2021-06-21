@@ -1,61 +1,33 @@
 <template>
-    <div id="layout">
-        <Nuxt />
-    </div>
+  <div id="layout">
+    <Nuxt />
+  </div>
 </template>
 
-<style>
+<style lang="scss">
 html {
-    font-family: "Helvetica Neue", Arial, sans-serif, -apple-system,
-        BlinkMacSystemFont, "Source Sans Pro", "Segoe UI", Roboto;
-    font-size: 16px;
-    word-spacing: 1px;
-    -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    box-sizing: border-box;
+  font-family: "Helvetica Neue", Arial, sans-serif, -apple-system,
+    BlinkMacSystemFont, "Source Sans Pro", "Segoe UI", Roboto;
+  font-size: 16px;
+  word-spacing: 1px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  #layout {
+    background: transparent linear-gradient(0deg, #47728e 0%, #1b2831 100%) 0%
+      0% no-repeat padding-box;
+    p {
+      white-space: pre-wrap;
+    }
+  }
 }
 
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
-    margin: 0;
-}
-
-#layout {
-    background: url("~assets/Rectangle.png") no-repeat center;
-    background-attachment: fixed;
-    background-size: cover;
-}
-
-.button--green {
-    display: inline-block;
-    border-radius: 4px;
-    border: 1px solid #3b8070;
-    color: #3b8070;
-    text-decoration: none;
-    padding: 10px 30px;
-}
-
-.button--green:hover {
-    color: #fff;
-    background-color: #3b8070;
-}
-
-.button--grey {
-    display: inline-block;
-    border-radius: 4px;
-    border: 1px solid #35495e;
-    color: #35495e;
-    text-decoration: none;
-    padding: 10px 30px;
-    margin-left: 15px;
-}
-
-.button--grey:hover {
-    color: #fff;
-    background-color: #35495e;
+  box-sizing: border-box;
+  margin: 0;
 }
 </style>

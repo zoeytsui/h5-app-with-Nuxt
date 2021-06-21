@@ -1,0 +1,6 @@
+KEY,EN,IMG,LINK
+TITLE,My Wallet,,
+TOTAL_BALANCE,Total Balance,,
+DEPOSIT,Deposit,deposit.png,deposit
+WITHDRAWAL,Withdrawal,withdrawal.png,withdrawal
+PAYMENT_HISTORY,Payment History,payment_history.png,payment-History

@@ -1,12 +1,15 @@
 <template>
-  <div id="slug" class="text-left">
-    <h2>{{ page.title }}</h2>
+  <div>
+    <TopBar :currentPage="page.title" :prevPageURL="prevPageURL" />
 
-    <ol class="list-group">
-      <li v-for="question,index in page.list.questions" :key="index">{{ question }}
+    <div id="help-and-support" class="text-left container">
+      <h2>{{ page.description }}</h2>
+      <ol class="list-group">
+        <li v-for="question,index in page.list.questions" :key="index">{{ question }}
           <p>{{ page.list.answers[index] }}</p>
-      </li>
-    </ol>
+        </li>
+      </ol>
+    </div>
   </div>
 </template>
 
@@ -14,8 +17,11 @@
 export default {
   data() {
     return {
+      // TODO: update url
+      prevPageURL: "./terms-of-use",
       page: {
         title: null,
+        description: null,
         list: {
           questions: [],
           answers: []
@@ -23,9 +29,9 @@ export default {
       }
     };
   },
-  async asyncData({ $content, params, i18n, app }) {
+  async asyncData({ $content, i18n, route }) {
     const lang = i18n.getLocaleCookie();
-    const content = await $content("docs/help-and-support").fetch();
+    const content = await $content("docs", route.path).fetch();
     return { content, lang };
   },
   created() {
@@ -40,6 +46,9 @@ export default {
         switch (true) {
           case keyVal === "TITLE":
             this.page.title = keyArr[i][`${capitalLang}`];
+            break;
+          case keyVal === "DESCRIPTION":
+            this.page.description = keyArr[i][`${capitalLang}`];
             break;
           case keyVal.includes("QUEST"): {
             this.page.list.questions.push(keyArr[i][`${capitalLang}`]);
@@ -56,8 +65,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-#slug {
+#help-and-support {
   padding: 2rem;
+  background: border-box #f2f3f3;
+  border-radius: 20px;
   h2 {
     font-weight: bold;
     font-size: 28px;
@@ -69,7 +80,7 @@ export default {
   }
   li {
     counter-increment: quest;
-    p{
+    p {
       font-weight: normal;
     }
   }
