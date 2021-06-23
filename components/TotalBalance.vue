@@ -1,9 +1,9 @@
 
 <template>
   <div class="totalbalance pt-3">
-    <h4>{{ languageInBalance }}</h4>
-    <h1>{{ balancedAmount }}</h1>
-    <h4>{{ currency }}</h4>
+    <h6>{{ languageInBalance }}</h6>
+    <h2>{{ balancedAmount }}</h2>
+    <h6>{{ currency }}</h6>
   </div>
 </template>
 
@@ -14,6 +14,7 @@ export default {
   },
   data() {
     return {
+      // FIXME:
       balancedAmount: "API.balance",
       currency: "API.currency"
     };
@@ -30,10 +31,9 @@ export default {
   margin: 0 auto;
   color: #fff;
   width: 80%;
-  border-top: 1px solid #25d6cd54;
 }
 
-h1 {
+h2 {
   color: #2beae2;
 }
 </style>

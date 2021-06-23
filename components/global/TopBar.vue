@@ -16,24 +16,27 @@ export default {
     currentPage: String,
     prevPageURL: String
   },
-  // TODO: only for dev use
+  // TODO: for dev use
   mounted() {
-    console.log('currentPage', this.currentPage);
+    console.log("currentPage", this.currentPage);
   }
 };
 </script>
 
 <style lang="scss" scoped>
-hr {
-  border: 1px solid #2beae2;
-  margin: 0 2rem;
-  margin-bottom: 1rem;
-  opacity: 0.3;
+.navbar-brand {
+  font-size: 1rem;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  img {
+    width: 21px;
+    height: 17px;
+    margin-right: 0.4rem;
+  }
 }
-img {
-  vertical-align: text-top !important;
-  display: inline !important;
-  width: 31px;
-  height: 26px;
+hr {
+  border: $border;
+  margin: 0 2rem;
 }
 </style>
