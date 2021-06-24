@@ -1,7 +1,7 @@
 
 <template>
   <div class="totalbalance pt-3">
-    <h6>{{ languageInBalance }}</h6>
+    <h6>{{ totalBalance }}</h6>
     <h2>{{ balancedAmount }}</h2>
     <h6>{{ currency }}</h6>
   </div>
@@ -10,7 +10,7 @@
 <script>
 export default {
   props: {
-    languageInBalance: String
+    totalBalance: String
   },
   data() {
     return {
@@ -31,9 +31,8 @@ export default {
   margin: 0 auto;
   color: #fff;
   width: 80%;
-}
-
-h2 {
-  color: #2beae2;
+  h2 {
+    color: #2beae2;
+  }
 }
 </style>

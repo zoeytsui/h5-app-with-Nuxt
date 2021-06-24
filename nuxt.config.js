@@ -14,8 +14,9 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: '/assets/css/main.scss'}
+    ],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -29,6 +30,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    // for global js library
+    '@/plugins/script.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -46,7 +49,8 @@ export default {
     '@nuxt/content',
     // https://i18n.nuxtjs.org
     'nuxt-i18n',
-    '@nuxtjs/style-resources'
+    // for global css style sheet
+    '@nuxtjs/style-resources',
   ],
 
   i18n: {

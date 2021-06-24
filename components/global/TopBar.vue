@@ -16,10 +16,6 @@ export default {
     currentPage: String,
     prevPageURL: String
   },
-  // TODO: for dev use
-  mounted() {
-    console.log("currentPage", this.currentPage);
-  }
 };
 </script>
 

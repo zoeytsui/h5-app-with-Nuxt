@@ -1,96 +1,76 @@
 <template>
-  <div>
-    <TopBar :currentPage="contentHandler('TITLE')" :prevPageURL="prevPageURL" />
 
-    <TotalBalance :languageInBalance="contentHandler('TOTAL_BALANCE')" />
+  <b-list-group class="mr-auto ml-auto justify-content-between ">
+    <b-list-group-item :href="route + item.page" v-for="item,index in items" :key="index" class="d-flex align-items-center justify-content-center border-right-0 border-left-0 px-0">
+      <div class="container d-flex align-items-center">
+        <img :src="item.icon" class="mr-3" width="35px" />
+        <h5>{{item.name}}</h5>
+      </div>
+      <img src="~assets/wallet/Arrow_Right_white.png">
+    </b-list-group-item>
+  </b-list-group>
 
-    <template v-if="currentStatus === 'index'">
-      <table class="table text-left align-middle table-borderless">
-        <tr v-for="item,index in items" :key="index" v-on:click="changeTemplate(item.state)">
-          <!-- <a :href="item.url"> -->
-          <td width="20%"><img :src="item.icon"></td>
-          <td width="70%"> {{item.name}}</td>
-          <td width="10%">{{item.arrow}}</td>
-          <!-- </a> -->
-        </tr>
-      </table>
-    </template>
-
-    <template v-if="currentStatus === 'deposit'">
-      <depositTemp></depositTemp>
-    </template>
-
-    <template v-if="currentStatus === 'withdrawal'">
-      <h1>hihihihihihi withdrawal</h1>
-    </template>
-
-    <template v-if="currentStatus === 'paymentHistory'">
-      <h1>hihihihihihi paymentHistory</h1>
-    </template>
-
-  </div>
 </template>
 
 <script>
-import depositTemp from "./deposit.vue";
 export default {
+  layout: "wallet",
   data() {
     return {
-      currentStatus: "index",
-      // TODO: update url
-      prevPageURL: "../help-and-support",
+      route: `${this.$route.path}/`,
       items: [
         {
           icon: require("@/assets/wallet/deposit.png"),
           name: undefined,
-          arrow: ">",
-          state: "deposit"
+          page: "deposit"
         },
         {
           icon: require("@/assets/wallet/withdrawal.png"),
           name: undefined,
-          arrow: ">",
-          state: "withdrawal"
+          page: "withdrawal"
         },
         {
           icon: require("@/assets/wallet/payment_history.png"),
           name: undefined,
-          arrow: ">",
-          state: "paymentHistory"
+          page: "payment_history"
         }
       ]
     };
   },
-  components: { depositTemp },
-  async asyncData({ $content, route, i18n }) {
-    const lang = i18n.getLocaleCookie();
+  async asyncData({ $content, app }) {
     const content = await $content("wallet").fetch();
-    return { content, lang };
+    return { content, app };
   },
-  created() {
-    this.items[0].name = this.contentHandler("DEPOSIT");
-    this.items[1].name = this.contentHandler("WITHDRAWAL");
-    this.items[2].name = this.contentHandler("PAYMENT_HISTORY");
+  async created() {
+    this.updateString();
+    this.items[0].name = this.transKey("deposit");
+    this.items[1].name = this.transKey("withdrawal");
+    this.items[2].name = this.transKey("payment_history");
   },
   methods: {
-    contentHandler(keyStr) {
-      const capitalLang = this.lang.toUpperCase();
-      const keyArr = this.content.body;
-      let ouputString;
-      for (let i in keyArr) {
-        keyArr[i].KEY === keyStr
-          ? (ouputString = keyArr[i][`${capitalLang}`])
-          : undefined;
-      }
-      return ouputString;
+    updateString() {
+      this.$store.commit("wallet/update", {
+        currentPage: this.transKey("title"),
+        prevPageURL: "../help-and-support",
+        totalBalance: this.transKey("TOTAL_BALANCE")
+      });
     },
-    changeTemplate(temp) {
-      return (this.currentStatus = temp);
+    transKey(key) {
+      return this.app.$contentHandler(this.content.body, key);
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+.list-group {
+  width: 80%;
+  .list-group-item {
+    background: transparent;
+    color: #fff;
+    border-color: #25d6cd54 !important;
+  }
+}
+
 .table {
   width: 80%;
   margin: 2rem;
@@ -99,10 +79,15 @@ export default {
     height: 4rem;
     border-top: $border !important;
     border-bottom: $border !important;
-    td {
-      vertical-align: middle !important;
-      img {
-        width: calc(100% * 0.82);
+    text-decoration: none;
+    a {
+      color: #fff;
+      text-decoration: none;
+      td {
+        vertical-align: middle !important;
+        img {
+          width: calc(100% * 0.82);
+        }
       }
     }
   }
