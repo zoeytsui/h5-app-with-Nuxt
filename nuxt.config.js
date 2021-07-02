@@ -110,7 +110,7 @@ export default {
   },
 
   server: {
-    host: process.env.NODE_ENV === 'production' ? 'http://192.168.75.52' : 'localhost',
+    host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
     port: process.env.NODE_ENV === 'production' ? '8001' : '7070'
   }
 }
