@@ -5,7 +5,7 @@ export default ({ app, $axios }, inject) => {
             const md5 = require("md5");
 
             const user = 'app'
-            const timestamp = await (await $axios.$get("/api/?s=site.getServiceTime")).data;
+            const timestamp = (await $axios.$get("/api/?s=site.getServiceTime")).data;
             const key = 'K5AgjT7yUq2gwUbIaSHBPQeaknbdlfob';
 
             let sign = md5(service + timestamp + user + key);

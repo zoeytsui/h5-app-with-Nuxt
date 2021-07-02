@@ -74,16 +74,12 @@ export default {
 
   proxy: {
     '/api': {
-      target: process.env.NODE_ENV == "production" ? 'openapi.9999server.com' : 'http://192.168.75.52:8010',
+      target: process.env.NODE_ENV === "production" ? 'openapi.9999server.com' : 'http://192.168.75.52:8010',
       pathRewrite: {
         '^/api': '/',
         changeOrigin: true
       }
     },
-  },
-
-  privateRuntimeConfig: {
-    apiSecretKey: process.env.API_SECRETKEY
   },
 
   auth: {
@@ -93,9 +89,7 @@ export default {
   },
 
   server: {
-    host: process.env.NODE_ENV === 'development' ? process.env.UAT_HOST : process.env.DEV_HOST,
-    port: process.env.NODE_ENV === 'development' ? process.env.UAT_PORT : process.env.DEV_PORT
-    // host: process.env.DEV_HOST,
-    // port: process.env.DEV_PORT
+    host: process.env.NODE_ENV === 'production' ? 'ucenter.9999server.com' : 'localhost',
+    port: process.env.NODE_ENV === 'production' ? '8001' : '7070'
   }
 }
