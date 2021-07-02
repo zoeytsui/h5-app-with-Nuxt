@@ -66,6 +66,27 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    /*
+    ** You can extend webpack config here
+    */
+    // extractCSS: { allChunks: true },
+    // vender: [
+    //     'vue-resource',
+    //     'axios'
+    // ],
+    // extend(config, ctx) {
+    // },
+    // splitChunks: {
+    //     layouts: false,
+    //     pages: true,
+    //     commons: true,
+    //     minSize: 30000,
+    //     maxSize: 250000
+    // },
+    // analyze: true,
+    // assetFilter: function (assetFilename) {
+    //   return assetFilename.endsWith('.js');
+    // }
   },
 
   axios: {
@@ -89,7 +110,7 @@ export default {
   },
 
   server: {
-    host: process.env.NODE_ENV === 'production' ? 'ucenter.9999server.com' : 'localhost',
+    host: process.env.NODE_ENV === 'production' ? 'http://192.168.75.52' : 'localhost',
     port: process.env.NODE_ENV === 'production' ? '8001' : '7070'
   }
 }
