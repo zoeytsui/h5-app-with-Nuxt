@@ -40,8 +40,7 @@ export default {
         button: {
           caption: null,
           disabled: true,
-          // TODO: updated url
-          url: "./help-and-support"
+          url: "x60://me_page"
         }
       }
     };
@@ -123,8 +122,8 @@ export default {
     background: #2beae2;
     border-color: #2beae2;
   }
-  .form-check{
-    label{
+  .form-check {
+    label {
       text-decoration: underline;
     }
   }

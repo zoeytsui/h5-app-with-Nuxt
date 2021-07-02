@@ -1,31 +1,20 @@
 <template>
-  <div id="slug">
-    <!-- <TopBar :currentPage="'depost'" :prevPageURL="prevPageURL" />
+  <div class="container deposit">
 
-    <TotalBalance :languageInBalance="'TOTAL_BALANCE'" /> -->
+    <span class="span-box">{{deal_type_name}}</span>
 
-    <div class="container border-bottom pb-2">
-      <b-button type="button" class="btn">Currency(from API)</b-button>
-    </div>
+    <hr>
+
     <div class="main">
-      <p>{{texts[0]}}</p>
+      <p>{{keyStr('Deposit Amount')}}</p>
       <div class="input-group">
-        <input type="number" class="form-control rounded" aria-label="Amount (to the nearest dollar)">
-        <div class="input-group-append">
-          <span class="input-group-text text-light bg-transparent border-0">Currency(from API)</span>
-        </div>
-      </div>
-      <div class="qrcode py-4">QR code</div>
-      <p>{{texts[1]}}</p>
-      <div class="input-group">
-        <input type="number" class="form-control border-right-0" aria-label="Amount (to the nearest dollar)">
-        <div class="input-group-append">
-          <span class="input-group-text bg-white">copy img</span>
-        </div>
+        <b-form-input v-model="amount" :placeholder="keyStr('Amount')" aria-label="Amount (to the nearest dollar)"></b-form-input>
+        <span class="input-group-text text-light bg-transparent border-0">{{ deal_type }}</span>
       </div>
 
-      <button type="button" id="btn-export" class="btn my-3 w-100 text-light">{{texts[2]}}</button>
+      <b-button type="submit" id="btn-export" class="btn my-3 w-100 text-light">{{keyStr('confirm')}}</b-button>
     </div>
+
   </div>
 </template>
 
@@ -34,49 +23,70 @@ export default {
   layout: "wallet",
   data() {
     return {
-      texts: []
+      deal_type_name: null,
+      deal_type: null,
+      amount: null
     };
   },
-  async asyncData({ $content, app }) {
-    const content = await $content("docs/deposit").fetch();
-    return { content, app };
+  async asyncData(context) {
+    const content = await context.$content("wallet").fetch();
+    return { content };
   },
   created() {
-    // this.app.$contentHandler(this.content.body, "deposit");
-    // this._contentHandler(this.content.body)
+    this.updateState();
+  },
+  async fetch() {
+    let plugin = await this.$genSign("deposit.get_deal_type");
+
+    let token = {
+      token: this.$auth.$storage.getUniversal("token"),
+      user: plugin.user,
+      timestamp: plugin.timestamp,
+      sign: plugin.sign
+    };
+  console.log(token);
+    let get_deal_type = await this.$axios.$get(
+      "/api/?s=deposit.get_deal_type",
+      {
+        token: this.$auth.$storage.getUniversal("token"),
+        user: plugin.user,
+        timestamp: plugin.timestamp,
+        sign: plugin.sign
+      }
+    );
+
+    console.log(get_deal_type);
   },
   methods: {
-    // async _contentHandler(keyArr) {
-    //   console.log(keyArr);
-    //   const capitalLang = this.lang.toUpperCase();
-    //   for (let i in keyArr) {
-    //     this.texts.push(keyArr[i][capitalLang]);
-    //   }
-    // }
+    updateState() {
+      this.$store.commit("wallet/updateState", {
+        currentPage: this.keyStr("deposit"),
+        prevPageURL: "/wallet",
+        totalBalance: this.keyStr("Total Balance")
+      });
+    },
+    keyStr(key) {
+      return this.$csvHandler(this.content.body, key);
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
 $border-color: #25d6cd54;
-#slug {
+.deposit {
   color: #fff;
-  .container {
-    &.border-bottom {
-      border-color: $border-color !important;
-    }
-    .btn {
-      background-color: #2beae2;
-      color: #000;
-    }
+  .span-box {
+    padding: 0.2rem 0.4rem;
+    background-color: #2beae2;
+    color: #000;
+    border-radius: 0.2rem;
+  }
+  hr {
+    margin: 1rem 0;
+    border-color: $border-color !important;
   }
   #btn-export {
-    background: linear-gradient(
-      180deg,
-      rgba(43, 234, 226, 1) 0%,
-      rgba(43, 234, 226, 1) 15%,
-      rgb(21, 112, 108) 100%
-    );
-    background-repeat: no-repeat;
+    @include button-green;
   }
 
   // hide the arrows of input field

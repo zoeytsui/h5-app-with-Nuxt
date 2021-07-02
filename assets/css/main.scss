@@ -1,1 +1,5 @@
-$border: 1px solid #285b65;
+$border-color: #285b65;
+@mixin button-green {
+    color: #1b2831;
+    background: linear-gradient(180deg, rgba(43, 234, 226, 1) 0%, rgba(43, 234, 226, 1) 15%, rgb(21, 112, 108) 100%);
+}

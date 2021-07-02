@@ -17,8 +17,7 @@
 export default {
   data() {
     return {
-      // TODO: update url
-      prevPageURL: "./terms-of-use",
+      prevPageURL: "x60://me_page",
       page: {
         title: null,
         description: null,

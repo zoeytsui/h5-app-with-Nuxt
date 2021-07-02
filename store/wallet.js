@@ -1,10 +1,10 @@
 export const state = () => ({
-    currentPage: 'STATE 1',
-    prevPageURL: 'STATE 2',
-    totalBalance: 'STATE 3',
+    currentPage: '',
+    prevPageURL: 'x60://me_page',
+    totalBalance: '',
 })
 export const mutations = {
-    update(state, { currentPage, prevPageURL, totalBalance }) {
+    updateState(state, { currentPage, prevPageURL, totalBalance }) {
         state.currentPage = currentPage;
         state.prevPageURL = prevPageURL;
         state.totalBalance = totalBalance;

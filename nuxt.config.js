@@ -1,6 +1,6 @@
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
+  ssr: true,
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -13,11 +13,13 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: '/assets/css/main.scss'}
-    ],
   },
+
+  // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
+  plugins: [
+    { src: '@/plugins/script.js' },
+    { src: '@/plugins/auth.js', mode: 'server' },
+  ],
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
@@ -25,14 +27,9 @@ export default {
   ],
 
   styleResources: {
-    scss: ['./assets/css/*.scss']
+    scss: ['@/assets/css/*.scss']
   },
 
-  // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    // for global js library
-    '@/plugins/script.js'
-  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -51,13 +48,15 @@ export default {
     'nuxt-i18n',
     // for global css style sheet
     '@nuxtjs/style-resources',
+    // https://axios.nuxtjs.org/usage
+    '@nuxtjs/axios',
+    // https://auth.nuxtjs.org/
+    '@nuxtjs/auth-next'
   ],
 
   i18n: {
     locales: ['en'],
     defaultLocale: 'en',
-    // vueI18n: {
-    // }
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content
@@ -69,8 +68,34 @@ export default {
   build: {
   },
 
+  axios: {
+    proxy: true
+  },
+
+  proxy: {
+    '/api': {
+      target: process.env.NODE_ENV == "production" ? 'openapi.9999server.com' : 'http://192.168.75.52:8010',
+      pathRewrite: {
+        '^/api': '/',
+        changeOrigin: true
+      }
+    },
+  },
+
+  privateRuntimeConfig: {
+    apiSecretKey: process.env.API_SECRETKEY
+  },
+
+  auth: {
+    strategies: {
+      local: {},
+    },
+  },
+
   server: {
-    host: process.env.DEV_HOST,
-    port: process.env.DEV_PORT
+    host: process.env.NODE_ENV === 'development' ? process.env.UAT_HOST : process.env.DEV_HOST,
+    port: process.env.NODE_ENV === 'development' ? process.env.UAT_PORT : process.env.DEV_PORT
+    // host: process.env.DEV_HOST,
+    // port: process.env.DEV_PORT
   }
 }

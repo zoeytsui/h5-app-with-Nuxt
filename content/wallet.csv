@@ -1,6 +1,20 @@
-KEY,EN,IMG,LINK
-TITLE,My Wallet,,
-TOTAL_BALANCE,Total Balance,,
-DEPOSIT,Deposit,deposit.png,deposit
-WITHDRAWAL,Withdrawal,withdrawal.png,withdrawal
-PAYMENT_HISTORY,Payment History,payment_history.png,payment-History
+KEY,EN
+MY WALLET,My Wallet
+TOTAL BALANCE,Total Balance
+DEPOSIT,Deposit
+WITHDRAWAL,Withdrawal
+PAYMENT HISTORY,Payment History
+DEPOSIT AMOUNT,Deposit Amount
+ADDRESS,Address
+EXPORT QR CODE,Export QR code
+CONFIRM,Confirm
+AMOUNT,Amount
+RECIPIENT'S ADDRESS,Recipient's Address
+WITHDRAWAL AMOUNT,Withdrawal Amount
+TRANSACTION FEE,Transaction fee
+ACTUAL WITHDRAWAL,Actual withdrawal
+WITHDRAW COMPLETED,Withdraw Completed
+BACK TO MY WALLET,Back to my Wallet
+PROCESSING,Processing
+SUCCESS,Success
+FAIL,Fail

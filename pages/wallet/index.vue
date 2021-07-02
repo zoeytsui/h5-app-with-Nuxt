@@ -37,27 +37,32 @@ export default {
       ]
     };
   },
-  async asyncData({ $content, app }) {
-    const content = await $content("wallet").fetch();
-    return { content, app };
+  async asyncData(context) {
+    const content = await context.$content("wallet").fetch();
+    return { content };
+  },
+  async fetch() {
+    let sign = await this.$genSign("App.site.test");
+    // console.log(sign);
   },
   async created() {
-    this.updateString();
-    this.items[0].name = this.transKey("deposit");
-    this.items[1].name = this.transKey("withdrawal");
-    this.items[2].name = this.transKey("payment_history");
+    this.updateState();
+    this.items[0].name = this.keyStr("deposit");
+    this.items[1].name = this.keyStr("withdrawal");
+    this.items[2].name = this.keyStr("payment history");
   },
   methods: {
-    updateString() {
-      this.$store.commit("wallet/update", {
-        currentPage: this.transKey("title"),
-        prevPageURL: "../help-and-support",
-        totalBalance: this.transKey("TOTAL_BALANCE")
+    updateState() {
+      this.$store.commit("wallet/updateState", {
+        currentPage: this.keyStr("my wallet"),
+        // FIXME: URL not updated from store to page
+        prevPageURL: "x60://me_page",
+        totalBalance: this.keyStr("Total Balance")
       });
     },
-    transKey(key) {
-      return this.app.$contentHandler(this.content.body, key);
-    }
+    keyStr(key) {
+      return this.$csvHandler(this.content.body, key);
+    },
   }
 };
 </script>
@@ -67,29 +72,7 @@ export default {
   .list-group-item {
     background: transparent;
     color: #fff;
-    border-color: #25d6cd54 !important;
-  }
-}
-
-.table {
-  width: 80%;
-  margin: 2rem;
-  color: #fff;
-  tr {
-    height: 4rem;
-    border-top: $border !important;
-    border-bottom: $border !important;
-    text-decoration: none;
-    a {
-      color: #fff;
-      text-decoration: none;
-      td {
-        vertical-align: middle !important;
-        img {
-          width: calc(100% * 0.82);
-        }
-      }
-    }
+    border-color: $border-color !important;
   }
 }
 </style>
