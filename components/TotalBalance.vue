@@ -20,6 +20,7 @@ export default {
   },
   created() {
     this.getLogin();
+    // this.getToken();
   },
   methods: {
     getLogin() {
@@ -27,8 +28,9 @@ export default {
       if (!process.browser) return;
       switch (Object.keys(queryStr).length) {
         // senario 1: query string exsited
-        case 3:
+        case 4:
           this.$auth.$storage.setUniversal("token", queryStr.token);
+          this.$auth.$storage.setUniversal("login", queryStr.login);
           this.$auth.$storage.setUniversal("balance", queryStr.balance);
           this.$auth.$storage.setUniversal("currency", queryStr.currency);
           this.balance = queryStr.balance;
@@ -43,6 +45,14 @@ export default {
           this.$auth.$storage.getUniversal("currency") !== undefined
             ? (this.currency = this.$auth.$storage.getUniversal("currency"))
             : console.error("currency - Query String required");
+
+          this.$auth.$storage.getUniversal("login") !== undefined
+            ? (this.login = this.$auth.$storage.getUniversal("login"))
+            : console.error("login - Query String required");
+
+          this.$auth.$storage.getUniversal("token") !== undefined
+            ? (this.token = this.$auth.$storage.getUniversal("token"))
+            : console.error("token - Query String required");
           break;
       }
     }

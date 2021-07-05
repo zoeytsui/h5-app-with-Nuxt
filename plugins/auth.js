@@ -1,34 +1,32 @@
-export default ({ app, $axios }, inject) => {
+const md5 = require("md5");
+
+export default (context, inject) => {
     inject(
         // generate sign value for api use
         'genSign', async (obj) => {
-            const md5 = require("md5");
+            try {
+                let user = 'app';
+                let token = context.$auth.$storage.getUniversal("token");
+                let login = context.$auth.$storage.getUniversal("login");
+                let timestamp = (await context.$axios.$get("/api/?s=site.getServiceTime")).data;
+                let secretKey = 'K5AgjT7yUq2gwUbIaSHBPQeaknbdlfob';
 
-            const user = obj.user;
-            let timestamp = (await $axios.$get("/api/?s=site.getServiceTime")).data;
-            // const timestamp = Math.floor(Date.now() / 1000);
+                let objKeys = Object.keys(obj).sort();
 
-            // let sign = md5(service + timestamp + user + key);
+                let newObj = objKeys.map(k => {
+                    k.includes('user') ? obj[k] = user : '';
+                    k.includes('token') ? obj[k] = token : '';
+                    k.includes('timestamp') ? obj[k] = timestamp : '';
+                    return obj[k]
+                }).join('')
 
-            let keys = Object.keys(obj).sort();
-            let key = 'K5AgjT7yUq2gwUbIaSHBPQeaknbdlfob';
-            let str = '';
 
-            for (var p = 0; p < keys.length; p++) {
-                if (keys[p] == "sign" || obj[keys[p]] === "") {
-                    continue;
-                }
-                if (keys[p] == "timestamp") {
-                    str = str + timestamp;
-                } else {
-                    str = str + obj[keys[p]];
-                }
+                let sign = md5(newObj + secretKey)
+
+                return { user, timestamp, sign, token, login };
+            } catch (error) {
+                console.log(error);
             }
-            str = str + key
-
-            let sign = md5(str)
-
-            return { user, timestamp, sign };
         },
     )
 }
