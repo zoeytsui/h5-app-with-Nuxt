@@ -18,9 +18,9 @@ export default {
       amount: null
     };
   },
-  async asyncData({ $content, app }) {
-    const content = await $content("wallet").fetch();
-    return { content, app };
+  async asyncData(context) {
+    const content = await context.$content("wallet").fetch();
+    return { content};
   },
   created() {
     this.updateState();
@@ -34,7 +34,7 @@ export default {
       });
     },
     keyStr(key) {
-      return this.app.$csvHandler(this.content.body, key);
+      return this.$csvHandler(this.content.body, key);
     }
   }
 };
