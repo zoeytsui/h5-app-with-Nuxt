@@ -65,29 +65,7 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-    /*
-    ** You can extend webpack config here
-    */
-    // extractCSS: { allChunks: true },
-    // vender: [
-    //     'vue-resource',
-    //     'axios'
-    // ],
-    // extend(config, ctx) {
-    // },
-    // splitChunks: {
-    //     layouts: false,
-    //     pages: true,
-    //     commons: true,
-    //     minSize: 30000,
-    //     maxSize: 250000
-    // },
-    // analyze: true,
-    // assetFilter: function (assetFilename) {
-    //   return assetFilename.endsWith('.js');
-    // }
-  },
+  build: {},
 
   axios: {
     proxy: true

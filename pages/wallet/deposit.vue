@@ -35,25 +35,36 @@ export default {
   created() {
     this.updateState();
   },
-  async fetch() {
-    let plugin = await this.$genSign("deposit.get_deal_type");
+  async fetch(context) {
+    let plugin = await context.$genSign({
+      s: "members.login",
+      email: "spence@gmail.com",
+      password: "ABC1abcd",
+      isRememberMe: 1,
+      user: "app",
+      timestamp: 0
+    });
 
-    let token = {
-      token: this.$auth.$storage.getUniversal("token"),
-      user: plugin.user,
-      timestamp: plugin.timestamp,
-      sign: plugin.sign
-    };
-  console.log(token);
-    let get_deal_type = await this.$axios.$get(
-      "/api/?s=deposit.get_deal_type",
-      {
-        token: this.$auth.$storage.getUniversal("token"),
+    let get_deal_type = await context.$axios.$get(`/api/?s=members.login`, {
+      params: {
+        email: "spence@gmail.com",
+        password: "ABC1abcd",
+        isRememberMe: 1,
         user: plugin.user,
         timestamp: plugin.timestamp,
         sign: plugin.sign
       }
-    );
+    });
+
+    // let get_deal_type = await this.$axios.$post(
+    //   "/api/?s=deposit.get_deal_type",
+    //   {
+    //     token: this.$auth.$storage.getUniversal("token"),
+    //     user: plugin.user,
+    //     timestamp: plugin.timestamp,
+    //     sign: plugin.sign
+    //   }
+    // );
 
     console.log(get_deal_type);
   },
