@@ -97,6 +97,7 @@ export default {
           currency_name: get_deal_type.name,
           currency_decimal: get_deal_type.decimal,
           deposit_type: "egpay",
+          // TODO: wait to get callbackUrl from app
           callbackUrl: "url",
           remark: "",
           track: plugin_deposit_index.track,
@@ -114,17 +115,37 @@ export default {
     this.reback_sing = deposit_index.reback_sing;
     this.formURL = deposit_index.url;
 
-    let testCall = await this.$axios
+    // TODO: egpay test
+    // let egpay = await fetch(deposit_index.url)
 
     // -=-=-=-=-=-= deposit_callbackurl =-=-=-=-=-=-=-=
-    // let plugin_deposit_callbackurl = await this.$genSign({
-    //   encryptedText:'',
-    //   signedText:'',
-    //   reback_sing: deposit_index.reback_sing,
-    //   user: "",
-    //   timestamp: "",
-    //   token: ""
-    // });
+    let plugin_deposit_callbackurl = await this.$genSign({
+      s: "deposit.callbackurl",
+      encryptedText: "",
+      signedText: "",
+      reback_sing: deposit_index.reback_sing,
+      user: "",
+      timestamp: "",
+      token: ""
+    });
+
+    let deposit_callbackurl = await this.$axios
+      .$get("/api/?s=deposit.callbackurl", {
+        params: {
+          encryptedText: "",
+          signedText: "",
+          reback_sing: deposit_index.reback_sing,
+          token: plugin_deposit_callbackurl.token,
+          user: plugin_deposit_callbackurl.user,
+          timestamp: plugin_deposit_callbackurl.timestamp,
+          sign: plugin_deposit_callbackurl.sign
+        }
+      })
+      .then(res => res.data);
+
+    // result
+    // TODO: egpay not ready
+    // console.log(deposit_callbackurl);
 
   },
   watch: {
