@@ -25,25 +25,30 @@ export default {
     getLogin() {
       let queryStr = this.$nuxt.context.query;
       if (!process.browser) return;
-      switch (Object.keys(queryStr).length) {
-        // senario 1: query string exsited
-        case 3:
-          this.$auth.$storage.setUniversal("token", queryStr.token);
-          this.$auth.$storage.setUniversal("balance", queryStr.balance);
-          this.$auth.$storage.setUniversal("currency", queryStr.currency);
-          this.balance = queryStr.balance;
-          this.currency = queryStr.currency;
-          break;
-        // senario 2: query string not exsited
-        case 0:
-          this.$auth.$storage.getUniversal("balance") !== undefined
-            ? (this.balance = this.$auth.$storage.getUniversal("balance"))
-            : console.error("balance - Query String required");
+      // senario 1: query string exsited
+      if (Object.keys(queryStr).length === 4) {
+        this.$auth.$storage.setUniversal("token", queryStr.token);
+        this.$auth.$storage.setUniversal("login", queryStr.login);
+        this.$auth.$storage.setUniversal("balance", queryStr.balance);
+        this.$auth.$storage.setUniversal("currency", queryStr.currency);
+        this.balance = queryStr.balance;
+        this.currency = queryStr.currency;
+      }
+      // senario 2: query string not exsited
+      else if (Object.keys(queryStr).length !== 4) {
+        this.$auth.$storage.getUniversal("balance") !== undefined
+          ? (this.balance = this.$auth.$storage.getUniversal("balance"))
+          : console.error("balance - Query String required");
 
-          this.$auth.$storage.getUniversal("currency") !== undefined
-            ? (this.currency = this.$auth.$storage.getUniversal("currency"))
-            : console.error("currency - Query String required");
-          break;
+        this.$auth.$storage.getUniversal("currency") !== undefined
+          ? (this.currency = this.$auth.$storage.getUniversal("currency"))
+          : console.error("currency - Query String required");
+
+        if (this.$auth.$storage.getUniversal("login") === undefined)
+          console.error("login - Query String required");
+
+        if (this.$auth.$storage.getUniversal("token") === undefined)
+          console.error("token - Query String required");
       }
     }
   }

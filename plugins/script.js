@@ -1,8 +1,8 @@
-export default ({ app }, inject) => {
+export default (context, inject) => {
     inject(
-        // for pass csv content key
+        // pass csv content key
         'csvHandler', (contentBody, keyStr) => {
-            let lang = app.store.$i18n.getLocaleCookie().toUpperCase();
+            let lang = context.store.$i18n.getLocaleCookie().toUpperCase();
             let capkeyStr = keyStr.toUpperCase();
             let keyArr = contentBody;
             let ouputString;
@@ -13,6 +13,24 @@ export default ({ app }, inject) => {
                     : undefined;
             }
             return ouputString;
-        }
-    )
+        },
+    ),
+        inject(
+            // gen api tack with login number + date
+            'genTrack', () => {
+                let date = new Date();
+                let components = [
+                    date.getFullYear(),
+                    date.getMonth() + 1,
+                    date.getDate(),
+                    date.getHours(),
+                    date.getMinutes(),
+                    date.getSeconds(),
+                    date.getMilliseconds()
+                ];
+                let loginUser = context.$auth.$storage.getUniversal("login");
+                var id = components.join("");
+                return loginUser + id;
+            }
+        )
 }
