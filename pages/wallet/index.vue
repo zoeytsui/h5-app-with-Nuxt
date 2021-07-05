@@ -41,10 +41,6 @@ export default {
     const content = await context.$content("wallet").fetch();
     return { content };
   },
-  async fetch() {
-    let sign = await this.$genSign("App.site.test");
-    // console.log(sign);
-  },
   async created() {
     this.updateState();
     this.items[0].name = this.keyStr("deposit");
