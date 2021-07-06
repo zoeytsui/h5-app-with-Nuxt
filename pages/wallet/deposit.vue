@@ -148,11 +148,6 @@ export default {
     // console.log(deposit_callbackurl);
 
   },
-  watch: {
-    async amount(newVal, oldVal) {
-      console.log(await this.$genSign());
-    }
-  },
   methods: {
     updateState() {
       this.$store.commit("wallet/updateState", {
@@ -160,12 +155,14 @@ export default {
         prevPageURL: "/wallet",
         totalBalance: this.keyStr("Total Balance")
       });
+      console.log(this.$store.state);
     },
     keyStr(key) {
       return this.$csvHandler(this.content.body, key);
     },
     async onSubmit(event) {
       event.preventDefault();
+      // TODO: update value to fetch
       console.log("onSubmit", this.amount);
     }
   }

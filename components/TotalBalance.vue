@@ -18,7 +18,7 @@ export default {
       currency: null
     };
   },
-  created() {
+  mounted() {
     this.getLogin();
   },
   methods: {
