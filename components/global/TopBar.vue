@@ -1,10 +1,10 @@
 <template>
   <div class="container-fluid">
     <nav class="navbar navbar-dark container-fluid">
-      <a class="navbar-brand" :href="prevPageURL">
+      <n-link class="navbar-brand" :to="prevPageURL">
         <img src="~assets/Arrow_l_blue.png" alt="">
         {{currentPage}}
-      </a>
+      </n-link>
     </nav>
     <hr>
   </div>
