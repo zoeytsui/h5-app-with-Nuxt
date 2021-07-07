@@ -2,170 +2,152 @@
     <div class="container deposit">
         <span class="span-box" @click='selectBox("deposit")' :class="{active:selected=='deposit'}">{{keyStr('deposit')}}</span>
         <span class="span-box" @click='selectBox("withdrawal")' :class="{active:selected=='withdrawal'}">{{keyStr('withdrawal')}}</span>
-        <span class="span-box" @click='selectBox("payment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
+        <span class="span-box" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
 
         <hr>
 
-        <b-container class="records" v-for="(item,i) in convertedData" :key="i">
-            <b-row class="records-header">
-                <b-col cols="3" v-html="item.date"></b-col>
-                <b-col cols="4" v-html="item.records.length + ' Records'"></b-col>
-                <b-col cols="5"></b-col>
-            </b-row>
-            <span v-for="(record , j) in item.records" :key="j">
-                <b-row>
-                    <b-col cols="3" v-html="record.time"></b-col>
-                    <b-col cols="4" v-html="record.order"></b-col>
-                    <b-col cols="5" class="text-right amount" v-html="'+ ' + record.amount"></b-col>
-                </b-row>
-                <b-row>
-                    <b-col cols="3"></b-col>
-                    <b-col cols="4">{{keyStr(record.status)}}</b-col>
-                    <b-col cols="5" class="text-right" v-html="record.currency"></b-col>
-                </b-row>
-            </span>
-        </b-container>
+        <PaymentHistoryTable :selectedData="detectSelected" :contents="content" />
 
     </div>
 </template>
 
 <script>
+import { mapGetters, mapState } from "vuex"
+
 export default {
     layout: "wallet",
     data() {
         return {
             selected: "deposit",
             amount: null,
-            // depositData: {
-            //     pages: 45,
-            //     count: "90",
-            //     list: [
-            //         {
-            //             order: "ep21061008580544973",
-            //             create_time: "2021-06-10 08:58:06",
-            //             money: "999",
-            //             deposit_status: "Processing",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-10",
-            //             time: "08:58:06",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-10",
-            //             time: "08:55:43",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-09",
-            //             time: "08:55:43",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-09",
-            //             time: "08:55:43",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-09",
-            //             time: "08:55:43",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-09",
-            //             time: "08:55:43",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-09",
-            //             time: "08:55:43",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-09",
-            //             time: "08:55:43",
-            //         },
-            //         {
-            //             order: "ep21061008554371853",
-            //             create_time: "2021-06-10 08:55:43",
-            //             money: "200",
-            //             deposit_status: "Success",
-            //             currency_name: "USDT-erc20",
-            //             date: "2021-06-09",
-            //             time: "08:55:43",
-            //         },
-            //     ],
-            // },
-            depositData:null,
-            convertedData: null,
             currentPosition: "",
             lastPosition: "",
+            hihi: "13",
+            convertedDeposit: "",
+            convertedWithdraw: "",
+            convertedAdjustment: "",
         }
     },
+
     async asyncData(context) {
         const content = await context.$content("wallet").fetch()
-        return { content }
-    },
-    created() {
-        this.updateState()
-    },
-    async fetch(context) {
-        let plugin = await context.$genSign({
+
+        let depositplugin = await context.$genSign({
             s: "deposit.get_list",
-            login: 1000036,
+            login: "",
             page: 1,
-            pageSize: 10,
-            token: "c06f36b5d1a0c8c5c57a2bebe78f6d91",
-            user: "app",
-            timestamp: 0,
+            pageSize: 99,
+            token: "",
+            user: "",
+            timestamp: "",
         })
 
-        let get_deposit_list = await context.$axios.$get(
+        let depositList = await context.$axios.$get(
             `/api/?s=deposit.get_list`,
             {
                 params: {
-                    login: 1000036,
+                    login: depositplugin.login,
                     page: 1,
-                    pageSize: 10,
-                    token: "c06f36b5d1a0c8c5c57a2bebe78f6d91",
-                    user: plugin.user,
-                    timestamp: plugin.timestamp,
-                    sign: plugin.sign,
+                    pageSize: 99,
+                    token: depositplugin.token,
+                    user: depositplugin.user,
+                    timestamp: depositplugin.timestamp,
+                    sign: depositplugin.sign,
                 },
             }
         )
-        this.depositData = get_deposit_list
-        
-        console.log(get_deposit_list)
-        
+
+        let withdrawalPlugin = await context.$genSign({
+            s: "withdraw.get_list",
+            login: "",
+            page: 1,
+            pageSize: 99,
+            token: "",
+            user: "",
+            timestamp: "",
+        })
+
+        let withdrawalList = await context.$axios.$get(
+            `/api/?s=withdraw.get_list`,
+            {
+                params: {
+                    login: withdrawalPlugin.login,
+                    page: 1,
+                    pageSize: 99,
+                    token: withdrawalPlugin.token,
+                    user: withdrawalPlugin.user,
+                    timestamp: withdrawalPlugin.timestamp,
+                    sign: withdrawalPlugin.sign,
+                },
+            }
+        )
+
+        let adjustmentPlugin = await context.$genSign({
+            s: "bounty.get_list",
+            login: "",
+            page: 1,
+            pageSize: 99,
+            token: "",
+            user: "",
+            timestamp: "",
+        })
+
+        let adjustmentList = await context.$axios.$get(
+            `/api/?s=bounty.get_list`,
+            {
+                params: {
+                    login: adjustmentPlugin.login,
+                    page: 1,
+                    pageSize: 99,
+                    token: adjustmentPlugin.token,
+                    user: adjustmentPlugin.user,
+                    timestamp: adjustmentPlugin.timestamp,
+                    sign: adjustmentPlugin.sign,
+                },
+            }
+        )
+
+        context.store.dispatch("history/convertState", {
+            depositList: depositList.data,
+            withdrawalList: withdrawalList.data,
+            adjustmentList: adjustmentList.data,
+        })
+        // context.store.commit("history/updateState", {
+        //     depositList,
+        //     withdrawalList,
+        //     adjustmentList,
+        // })
+
+        return { content }
     },
+
+    created() {
+        this.updateState()
+        this.convertedDeposit = this.convertData(this.depositList)
+        this.convertedWithdraw = this.convertData(this.withdrawalList)
+        this.convertedAdjustment = this.convertData(this.adjustmentList)
+    },
+
+    computed: {
+        ...mapGetters({
+            depositList: "history/getdepositList",
+            withdrawalList: "history/getwithdrawalList",
+            adjustmentList: "history/getadjustmentList",
+        }),
+        detectSelected() {
+            switch (this.selected) {
+                case "deposit":
+                    return this.convertedDeposit
+
+                case "withdrawal":
+                    return this.convertedWithdraw
+
+                case "adjustment":
+                    return this.convertedAdjustment
+            }
+        },
+    },
+
     methods: {
         updateState() {
             this.$store.commit("wallet/updateState", {
@@ -180,38 +162,65 @@ export default {
         selectBox(box) {
             this.selected = box
         },
-        convertData() {
-            let that = this
-            let dateList = {}
-            that.depositData.list.forEach((element) => {
-                if (dateList[element.date]) {
-                    dateList[element.date].records.push({
-                        time: element.time,
-                        order: element.order,
-                        amount: element.money,
-                        status: element.deposit_status,
-                        currency: element.currency_name,
-                    })
-                } else {
-                    let date = this.convertDateFormat(element.date)
-                    let records = [
-                        {
-                            time: element.time,
-                            order: element.order,
-                            amount: element.money,
-                            status: element.deposit_status,
-                            currency: element.currency_name,
-                        },
-                    ]
-                    dateList[element.date] = { records, date }
+        convertData(data_list) {
+            let dateList = []
+            let count = 0
+            let tenRecords = "tenRecords"
+            let total = data_list.count
+            if (total > 0) {
+                for (let i = 0; i < data_list.list.length; i++) {
+                    if (i == 0 || i % 10 == 0) {
+                        count++
+                        dateList.push({ count, tenRecords: [] })
+                    }
+                    if (
+                        dateList[count - 1][tenRecords][data_list.list[i].date]
+                    ) {
+                        // console.log("YES");
+                        dateList[count - 1][tenRecords][
+                            data_list.list[i].date
+                        ].records.push({
+                            time: data_list.list[i].time,
+                            order: data_list.list[i].order,
+                            amount: data_list.list[i].money,
+                            status: data_list.list[i].deposit_status,
+                            currency: data_list.list[i].currency_name,
+                        })
+                    } else {
+                        // console.log("NO");
+                        let date = this.convertDateFormat(
+                            data_list.list[i].date
+                        )
+                        let records = [
+                            {
+                                time: data_list.list[i].time,
+                                order: data_list.list[i].order,
+                                amount: data_list.list[i].money,
+                                status: data_list.list[i].deposit_status,
+                                currency: data_list.list[i].currency_name,
+                            },
+                        ]
+                        dateList[count - 1][tenRecords][
+                            data_list.list[i].date
+                        ] = { records, date }
+                    }
                 }
-            })
-            this.convertedData = dateList
-            console.log(this.convertedData)
+            }
+            // console.log(`typeof(dateList[0].tenRecords`)
+            // console.log(typeof dateList[0].tenRecords)
+            // console.log(`dateList[0].tenRecords`)
+            // console.log(dateList[0].tenRecords)
+            // console.log(`dateList[0].tenRecords.length`)
+            // console.log(dateList[0].tenRecords.length)
+            // console.log(`Object.keys(dateList[0].tenRecords)`)
+            // console.log(Object.keys(dateList[0].tenRecords))
+            // console.log(dateList["total"])
+
+            return { dateList, total }
         },
 
-        convertDateFormat(date) {
-            let mydate = new Date(date)
+        convertDateFormat(mydate) {
+            let date = new Date(mydate)
             let month = [
                 "January",
                 "February",
@@ -225,11 +234,12 @@ export default {
                 "October",
                 "November",
                 "December",
-            ][mydate.getMonth()]
-            return mydate.getDate() + " " + month
+            ][date.getMonth()]
+            return date.getDate() + " " + month
         },
 
         checkScrollDown() {
+            
             if (process.client) {
                 //get the height of entire page
                 let height =
@@ -254,11 +264,9 @@ export default {
                 }
             }
         },
-
     },
     mounted() {
-        window.addEventListener("scroll", this.checkScrollDown),
-        this.convertData();
+        window.addEventListener("scroll", this.checkScrollDown)
     },
 }
 </script>
@@ -281,20 +289,6 @@ $border-color: #25d6cd54;
     }
     #btn-export {
         @include button-green;
-    }
-
-    .records {
-        &-header {
-            color: #2beae2;
-            font-weight: bold;
-            background-color: #273d4b;
-        }
-        span .row:nth-of-type(even) {
-            background-color: #273d4b;
-        }
-        .amount {
-            color: #60bc3f;
-        }
     }
 }
 </style>
