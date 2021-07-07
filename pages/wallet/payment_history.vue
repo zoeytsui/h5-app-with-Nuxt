@@ -1,19 +1,20 @@
 <template>
-    <div class="container deposit">
-        <span class="span-box" @click='selectBox("deposit")' :class="{active:selected=='deposit'}">{{keyStr('deposit')}}</span>
-        <span class="span-box" @click='selectBox("withdrawal")' :class="{active:selected=='withdrawal'}">{{keyStr('withdrawal')}}</span>
-        <span class="span-box" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
+    <div class="container payment-history">
+        <section class="options py-2 ">
+            <span class="span-box" @click='selectBox("deposit")' :class="{active:selected=='deposit'}">{{keyStr('deposit')}}</span>
+            <span class="span-box" @click='selectBox("withdrawal")' :class="{active:selected=='withdrawal'}">{{keyStr('withdrawal')}}</span>
+            <span class="span-box" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
+        </section>
+        <div v-if="errorMsg" class="text-center">
+            {{errorMsg[0]}}
+        </div>
 
-        <hr>
-        <div v-if="errorMsg" class="text-center">{{errorMsg[0]}}</div>
-        <PaymentHistoryTable :selectedData="detectSelected" :contents="content" :initialCount="1" />
-
-
+        <PaymentHistoryTable :selectedBox="selected" :selectedData="detectSelected" :contents="content" v-else />
     </div>
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex"
+import { mapGetters } from "vuex"
 
 export default {
     layout: "wallet",
@@ -242,12 +243,18 @@ export default {
 </script>
 <style lang="scss" scoped>
 $border-color: #25d6cd54;
-.deposit {
+.payment-history {
     color: #fff;
+    background: #314553;
+    .options{
+        border-top:$border-color 1px solid;
+        border-bottom:$border-color 1px solid;
+    }
     .span-box {
         padding: 0.2rem 0.4rem;
         border-radius: 0.2rem;
         color: #fff;
+        margin:0 0.5rem;
         &.active {
             background-color: #2beae2;
             color: #000;

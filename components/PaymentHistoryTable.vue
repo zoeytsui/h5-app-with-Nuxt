@@ -1,22 +1,22 @@
 <template>
-    <div>
+    <div :class="selectedBox" class="pb-5">
         <div v-if="selectedData.total == 0" class="text-center">
             {{keyStr("NORECORD")}}.
         </div>
         <b-container class="records" v-for="i in count" :key="i" v-else>
             <span v-for="(date , j) in Object.keys(selectedData.dateList[i-1].tenRecords)" :key="j">
-                <b-row class="records-header">
-                    <b-col sm="3" cols="3" v-html="selectedData.dateList[i-1].tenRecords[date].date"></b-col>
+                <b-row class="records-header py-1">
+                    <b-col sm="3" cols="3" class="pr-0" v-html="selectedData.dateList[i-1].tenRecords[date].date"></b-col>
                     <b-col sm="4" cols="6" v-html="selectedData.dateList[i-1].tenRecords[date].records.length + ' Records'"></b-col>
                     <b-col sm="5" cols="3"></b-col>
                 </b-row>
                 <span v-for="(record , k) in selectedData.dateList[i-1].tenRecords[date].records" :key="k">
-                    <b-row>
+                    <b-row class="py-1">
                         <b-col sm="3" cols="3" v-html="record.time"></b-col>
-                        <b-col sm="4" cols="6" class="order-no" v-html="record.order"></b-col>
+                        <b-col sm="4" cols="6" class="order-no" v-html="'#' + record.order"></b-col>
                         <b-col sm="5" cols="3" class="text-right amount" v-html="'+ ' + record.amount"></b-col>
                     </b-row>
-                    <b-row>
+                    <b-row class="py-1">
                         <b-col sm="3" cols="3"></b-col>
                         <b-col sm="4" cols="6">{{keyStr(record.status)}}</b-col>
                         <b-col sm="5" cols="3" class="text-right" v-html="record.currency"></b-col>
@@ -30,6 +30,10 @@
 <script>
 export default {
     props: {
+        selectedBox: {
+            type: String,
+            required: true,
+        },
         selectedData: {
             type: Object,
             required: true,
@@ -51,8 +55,6 @@ export default {
             return this.$csvHandler(this.contents.body, key)
         },
         checkScrollDown(e) {
-            console.log("Scrolled")
-            console.log(this.count)
             // check if already scroll to the bottom
             if (this.count < this.selectedData.dateList.length) {
                 if (
@@ -62,10 +64,6 @@ export default {
                     5
                 ) {
                     this.count++
-                    console.log("selectedData.dateList.length")
-                    console.log(this.selectedData.dateList.length)
-                    console.log("this.count")
-                    console.log(this.count)
                 }
             } else return
         },
@@ -83,7 +81,7 @@ export default {
             immediate: true,
             deep: true,
             handler() {
-                this.count = 1;
+                this.count = 1
             },
         },
     },
@@ -96,6 +94,7 @@ export default {
         color: #2beae2;
         font-weight: bold;
         background-color: #273d4b;
+        border-bottom: 1px solid #f7f7f763;
     }
     span .row:nth-of-type(even) {
         background-color: #273d4b;
@@ -103,8 +102,19 @@ export default {
     .order-no {
         word-wrap: break-word;
     }
+    & > span span:last-of-type .row:last-of-type{
+        border-bottom: 1px solid #f7f7f763;
+    }
+}
+.deposit {
     .amount {
         color: #60bc3f;
+    }
+}
+.withdrawal,
+.adjustment {
+    .amount {
+        color: #db3e62;
     }
 }
 </style>
