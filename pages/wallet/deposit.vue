@@ -14,7 +14,7 @@
           <!-- <b-form-invalid-feedback :state="validation">please input number</b-form-invalid-feedback> -->
         </div>
 
-        <b-button type="submit" id="btn-export" class="btn my-3 w-100 text-light">{{keyStr('confirm')}}</b-button>
+        <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('confirm')}}</b-button>
       </b-form>
     </div>
 
@@ -30,9 +30,13 @@ export default {
       currency_name: null,
       deal_type: null,
       amount: null,
-      reback_sing: null,
-      formURL: null
+      reback_sing: null
     };
+  },
+  computed: {
+    isDisabled() {
+      return this.amount !== null ? false : true;
+    }
   },
   async asyncData(context) {
     const content = await context.$content("wallet").fetch();
@@ -83,6 +87,7 @@ export default {
     },
     async onSubmit(event) {
       event.preventDefault();
+      alert("loading");
 
       // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- deposit_index
       // http://showdoc.pubhx.com/index.php?s=/50&page_id=1211
@@ -143,10 +148,15 @@ export default {
       // TODO: test again when EGPay network working
       let deposit_callbackurl = await this.$axios
         .$get("/api?", {
-          params: { ...deposit_callbackurl_params, ...deposit_callbackurl_sign }
+          params: {
+            ...deposit_callbackurl_params,
+            ...deposit_callbackurl_sign
+          }
         })
         .then(res => {
           console.log(res);
+          alert(`${this.amount} deposit request send!`);
+          this.$router.push({ path: "/wallet" });
         })
         .catch(err => {
           console.error(err);
