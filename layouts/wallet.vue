@@ -23,6 +23,17 @@ export default {
       return this.$store.state.wallet.totalBalance;
     }
   },
+  methods:{
+      changeBackground(){
+          if (this.currentPage == "Payment History"){
+              let wallet = document.querySelector('#wallet');
+              wallet.style.background = "#314553";
+          }
+      },
+  },
+  mounted(){
+      this.changeBackground()
+  },
 };
 </script>
 
@@ -40,7 +51,7 @@ html {
   #wallet {
     background: transparent linear-gradient(0deg, #47728e 0%, #1b2831 100%) 0%
       0% no-repeat padding-box;
-    height: 100vh;
+    min-height: 100vh;
     p {
       white-space: pre-wrap;
     }

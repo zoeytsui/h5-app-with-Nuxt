@@ -1,15 +1,17 @@
 <template>
     <div class="container payment-history">
+
         <section class="options py-2 ">
-            <span class="span-box" @click='selectBox("deposit")' :class="{active:selected=='deposit'}">{{keyStr('deposit')}}</span>
-            <span class="span-box" @click='selectBox("withdrawal")' :class="{active:selected=='withdrawal'}">{{keyStr('withdrawal')}}</span>
-            <span class="span-box" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
+            <span class="span-box mr-1" @click='selectBox("deposit")' :class="{active:selected=='deposit'}">{{keyStr('deposit')}}</span>
+            <span class="span-box mx-1" @click='selectBox("withdrawal")' :class="{active:selected=='withdrawal'}">{{keyStr('withdrawal')}}</span>
+            <span class="span-box mx-1" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
         </section>
+
         <div v-if="errorMsg" class="text-center">
             {{errorMsg[0]}}
         </div>
-
         <PaymentHistoryTable :selectedBox="selected" :selectedData="detectSelected" :contents="content" v-else />
+
     </div>
 </template>
 
@@ -26,7 +28,7 @@ export default {
             convertedAdjustment: "",
         }
     },
-
+    //Getting data from API and content
     async asyncData(context) {
         const content = await context.$content("wallet").fetch()
 
@@ -40,9 +42,8 @@ export default {
             timestamp: "",
         })
 
-        let depositList = await context.$axios.$get(
-            `/api/?s=deposit.get_list`,
-            {
+        let depositList = await context.$axios
+            .$get(`/api/?s=deposit.get_list`, {
                 params: {
                     login: depositplugin.login,
                     page: 1,
@@ -52,8 +53,10 @@ export default {
                     timestamp: depositplugin.timestamp,
                     sign: depositplugin.sign,
                 },
-            }
-        )
+            })
+            .catch((err) => {
+                console.log(err)
+            })
 
         let withdrawalPlugin = await context.$genSign({
             s: "withdraw.get_list",
@@ -65,9 +68,8 @@ export default {
             timestamp: "",
         })
 
-        let withdrawalList = await context.$axios.$get(
-            `/api/?s=withdraw.get_list`,
-            {
+        let withdrawalList = await context.$axios
+            .$get(`/api/?s=withdraw.get_list`, {
                 params: {
                     login: withdrawalPlugin.login,
                     page: 1,
@@ -77,8 +79,10 @@ export default {
                     timestamp: withdrawalPlugin.timestamp,
                     sign: withdrawalPlugin.sign,
                 },
-            }
-        )
+            })
+            .catch((err) => {
+                console.log(err)
+            })
 
         let adjustmentPlugin = await context.$genSign({
             s: "bounty.get_list",
@@ -90,9 +94,8 @@ export default {
             timestamp: "",
         })
 
-        let adjustmentList = await context.$axios.$get(
-            `/api/?s=bounty.get_list`,
-            {
+        let adjustmentList = await context.$axios
+            .$get(`/api/?s=bounty.get_list`, {
                 params: {
                     login: adjustmentPlugin.login,
                     page: 1,
@@ -102,8 +105,10 @@ export default {
                     timestamp: adjustmentPlugin.timestamp,
                     sign: adjustmentPlugin.sign,
                 },
-            }
-        )
+            })
+            .catch((err) => {
+                console.log(err)
+            })
 
         if (
             depositList.ret == "200" &&
@@ -167,6 +172,7 @@ export default {
         selectBox(box) {
             this.selected = box
         },
+        //converting data to the suitable format
         convertData(data_list) {
             let dateList = []
             let count = 0
@@ -181,12 +187,15 @@ export default {
                     if (
                         dateList[count - 1][tenRecords][data_list.list[i].date]
                     ) {
+                        let amount = new Intl.NumberFormat().format(
+                            data_list.list[i].money
+                        )
                         dateList[count - 1][tenRecords][
                             data_list.list[i].date
                         ].records.push({
                             time: data_list.list[i].time,
                             order: data_list.list[i].order,
-                            amount: data_list.list[i].money,
+                            amount: amount,
                             status: data_list.list[i].deposit_status,
                             currency: data_list.list[i].currency_name,
                         })
@@ -194,11 +203,14 @@ export default {
                         let date = this.convertDateFormat(
                             data_list.list[i].date
                         )
+                        let amount = new Intl.NumberFormat().format(
+                            data_list.list[i].money
+                        )
                         let records = [
                             {
                                 time: data_list.list[i].time,
                                 order: data_list.list[i].order,
-                                amount: data_list.list[i].money,
+                                amount: amount,
                                 status: data_list.list[i].deposit_status,
                                 currency: data_list.list[i].currency_name,
                             },
@@ -245,16 +257,14 @@ export default {
 $border-color: #25d6cd54;
 .payment-history {
     color: #fff;
-    background: #314553;
-    .options{
-        border-top:$border-color 1px solid;
-        border-bottom:$border-color 1px solid;
+    .options {
+        border-top: $border-color 1px solid;
+        border-bottom: $border-color 1px solid;
     }
     .span-box {
         padding: 0.2rem 0.4rem;
         border-radius: 0.2rem;
         color: #fff;
-        margin:0 0.5rem;
         &.active {
             background-color: #2beae2;
             color: #000;

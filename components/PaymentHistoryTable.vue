@@ -13,13 +13,13 @@
                 <span v-for="(record , k) in selectedData.dateList[i-1].tenRecords[date].records" :key="k">
                     <b-row class="py-1">
                         <b-col sm="3" cols="3" v-html="record.time"></b-col>
-                        <b-col sm="4" cols="6" class="order-no" v-html="'#' + record.order"></b-col>
-                        <b-col sm="5" cols="3" class="text-right amount" v-html="'+ ' + record.amount"></b-col>
+                        <b-col sm="4" cols="5" class="text-break" v-html="'#' + record.order"></b-col>
+                        <b-col sm="5" cols="4" class="text-right amount " v-html="'+' + record.amount"></b-col>
                     </b-row>
                     <b-row class="py-1">
                         <b-col sm="3" cols="3"></b-col>
-                        <b-col sm="4" cols="6">{{keyStr(record.status)}}</b-col>
-                        <b-col sm="5" cols="3" class="text-right" v-html="record.currency"></b-col>
+                        <b-col sm="4" cols="5">{{keyStr(record.status)}}</b-col>
+                        <b-col sm="5" cols="4" class="text-right" v-html="record.currency"></b-col>
                     </b-row>
                 </span>
             </span>
@@ -56,6 +56,7 @@ export default {
         },
         checkScrollDown(e) {
             // check if already scroll to the bottom
+
             if (this.count < this.selectedData.dateList.length) {
                 if (
                     document.documentElement.scrollHeight -
@@ -95,15 +96,16 @@ export default {
         font-weight: bold;
         background-color: #273d4b;
         border-bottom: 1px solid #f7f7f763;
+        font-size: 1.2rem;
     }
     span .row:nth-of-type(even) {
         background-color: #273d4b;
     }
-    .order-no {
-        word-wrap: break-word;
-    }
-    & > span span:last-of-type .row:last-of-type{
+    & > span span:last-of-type .row:last-of-type {
         border-bottom: 1px solid #f7f7f763;
+    }
+    .amount {
+        white-space: nowrap;
     }
 }
 .deposit {
@@ -115,6 +117,21 @@ export default {
 .adjustment {
     .amount {
         color: #db3e62;
+    }
+}
+
+@media (max-width: 576px) {
+    .records {
+        .row{
+            div{
+                padding-left:5px;
+            }
+        }
+        span span .row {
+            div:not(:first-of-type) {
+                padding-right: 0;
+            }
+        }
     }
 }
 </style>
