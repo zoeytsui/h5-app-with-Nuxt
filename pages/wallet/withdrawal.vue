@@ -45,7 +45,7 @@
         </h4>
       </div>
 
-      <b-button type="submit" id="btn-export" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
+      <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
     </b-form>
   </div>
 </template>
@@ -65,10 +65,17 @@ export default {
   },
   computed: {
     transactionFee() {
-      return (this.amount * `${this.fee / 100}`).toFixed(3);
+      // factor of ten, round to 3 decimal places
+      const fac = Math.pow(10, 3);
+      return Math.floor(this.amount * `${this.fee / 100}` * fac) / fac;
     },
     actualWithdrawal() {
-      return this.amount - this.transactionFee;
+      // factor of ten, round to 3 decimal places
+      const fac = Math.pow(10, 3);
+      return Math.floor((this.amount - this.transactionFee) * fac) / fac;
+    },
+    isDisabled() {
+      return this.amount !== null ? false : true;
     }
   },
   async asyncData(context) {
@@ -79,27 +86,29 @@ export default {
     this.updateState();
   },
   async fetch() {
-    // -=-=-=-=-=-= get_deal_type =-=-=-=-=-=-=-=
-    let plugin_get_deal_type = await this.$genSign({
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
+    // http://showdoc.pubhx.com/index.php?s=/50&page_id=1216
+    let get_deal_type_params = {
       s: "withdraw.get_deal_type",
-      user: "",
-      timestamp: "",
-      token: ""
-    });
+      user: "app",
+      login: this.$auth.$storage.getUniversal("login"),
+      timestamp: Math.floor(Date.now() / 1000),
+      token: this.$auth.$storage.getUniversal("token")
+    };
+
+    let get_deal_type_sign = await this.$axios.$post(
+      "/lib/sign",
+      get_deal_type_params
+    );
 
     let get_deal_type = await this.$axios
-      .$get("/api/?s=withdraw.get_deal_type", {
-        params: {
-          token: plugin_get_deal_type.token,
-          user: plugin_get_deal_type.user,
-          timestamp: plugin_get_deal_type.timestamp,
-          sign: plugin_get_deal_type.sign
-        }
+      .$get("/api?", {
+        params: { ...get_deal_type_params, ...get_deal_type_sign }
       })
       .then(res => res.data.shift());
 
     // result
-    console.log(get_deal_type);
+    // console.log(get_deal_type);
     this.fee = get_deal_type.fee;
     this.deal_type = get_deal_type.deal_type;
     this.currency_name = get_deal_type.name;
@@ -118,8 +127,42 @@ export default {
     },
     async onSubmit(event) {
       event.preventDefault();
-      // TODO: update value to fetch
-      console.log("onSubmit", this.amount);
+      alert("loading");
+
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- withdraw_index
+      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1217
+      // TODO: GET callbackUrl from app
+      let withdraw_index_params = {
+        s: "withdraw.index",
+        amount: this.amount,
+        deal_type: this.deal_type,
+        currency_name: this.currency_name,
+        currency_decimal: this.currency_decimal,
+        track: this.$genTrack(),
+        fee: this.fee,
+        miner_fee: "",
+        remark: "",
+        user: "app",
+        login: this.$auth.$storage.getUniversal("login"),
+        timestamp: Math.floor(Date.now() / 1000),
+        token: this.$auth.$storage.getUniversal("token")
+      };
+
+      let withdraw_index_sign = await this.$axios.$post(
+        "/lib/sign",
+        withdraw_index_params
+      );
+
+      //TODO: test when balance enough
+      let withdraw_index = await this.$axios
+        .$get("/api?", {
+          params: { ...withdraw_index_params, ...withdraw_index_sign }
+        })
+        .then(res => {
+          console.log(res);
+          alert(`api msg said: ${res.msg}`);
+          this.$router.push({ path: "/wallet" });
+        });
     }
   }
 };
