@@ -14,10 +14,6 @@ export const getters = {
 
 export const actions = {
     convertState({ commit }, { depositList, withdrawalList, adjustmentList }) {
-        // let convertedDeposit = convertData(depositList);
-        // let convertedWithdraw = convertData(withdrawalList);
-        // let convertedAdjustment = convertData(adjustmentList);
-        // console.log(convertedDeposit);
         commit('updateState', { depositList, withdrawalList, adjustmentList });
     }
 }
@@ -28,8 +24,6 @@ export const mutations = {
         state.withdrawalList = withdrawalList;
         state.adjustmentList = adjustmentList;
         
-        // console.log(state.depositList);
-        // console.log(state.depositList[0].tenRecords);
     }
 }
 

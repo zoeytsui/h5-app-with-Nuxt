@@ -5,8 +5,9 @@
         <span class="span-box" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
 
         <hr>
+        <div v-if="errorMsg" class="text-center">{{errorMsg[0]}}</div>
+        <PaymentHistoryTable :selectedData="detectSelected" :contents="content" :initialCount="1" />
 
-        <PaymentHistoryTable :selectedData="detectSelected" :contents="content" />
 
     </div>
 </template>
@@ -19,10 +20,6 @@ export default {
     data() {
         return {
             selected: "deposit",
-            amount: null,
-            currentPosition: "",
-            lastPosition: "",
-            hihi: "13",
             convertedDeposit: "",
             convertedWithdraw: "",
             convertedAdjustment: "",
@@ -107,18 +104,24 @@ export default {
             }
         )
 
-        context.store.dispatch("history/convertState", {
-            depositList: depositList.data,
-            withdrawalList: withdrawalList.data,
-            adjustmentList: adjustmentList.data,
-        })
-        // context.store.commit("history/updateState", {
-        //     depositList,
-        //     withdrawalList,
-        //     adjustmentList,
-        // })
-
-        return { content }
+        if (
+            depositList.ret == "200" &&
+            withdrawalList.ret == "200" &&
+            adjustmentList.ret == "200"
+        ) {
+            context.store.dispatch("history/convertState", {
+                depositList: depositList.data,
+                withdrawalList: withdrawalList.data,
+                adjustmentList: adjustmentList.data,
+            })
+        } else {
+            var errorMsg = [
+                depositList.msg,
+                withdrawalList.msg,
+                adjustmentList.msg,
+            ]
+        }
+        return { content, errorMsg }
     },
 
     created() {
@@ -134,6 +137,7 @@ export default {
             withdrawalList: "history/getwithdrawalList",
             adjustmentList: "history/getadjustmentList",
         }),
+
         detectSelected() {
             switch (this.selected) {
                 case "deposit":
@@ -176,7 +180,6 @@ export default {
                     if (
                         dateList[count - 1][tenRecords][data_list.list[i].date]
                     ) {
-                        // console.log("YES");
                         dateList[count - 1][tenRecords][
                             data_list.list[i].date
                         ].records.push({
@@ -187,7 +190,6 @@ export default {
                             currency: data_list.list[i].currency_name,
                         })
                     } else {
-                        // console.log("NO");
                         let date = this.convertDateFormat(
                             data_list.list[i].date
                         )
@@ -206,16 +208,6 @@ export default {
                     }
                 }
             }
-            // console.log(`typeof(dateList[0].tenRecords`)
-            // console.log(typeof dateList[0].tenRecords)
-            // console.log(`dateList[0].tenRecords`)
-            // console.log(dateList[0].tenRecords)
-            // console.log(`dateList[0].tenRecords.length`)
-            // console.log(dateList[0].tenRecords.length)
-            // console.log(`Object.keys(dateList[0].tenRecords)`)
-            // console.log(Object.keys(dateList[0].tenRecords))
-            // console.log(dateList["total"])
-
             return { dateList, total }
         },
 
@@ -237,37 +229,15 @@ export default {
             ][date.getMonth()]
             return date.getDate() + " " + month
         },
-
-        checkScrollDown() {
-            
-            if (process.client) {
-                //get the height of entire page
-                let height =
-                    window.innerHeight || // for IE9 and Safari
-                    document.body.scrollHeight || //for Chrome
-                    document.documentElement.scrollHeight //for IE6/7/8, Firefox
-
-                let currentPosition =
-                    window.pageYOffset || // for IE9 and Safari
-                    document.body.scrollTop || //for Chrome
-                    document.documentElement.scrollTop //for IE6/7/8, Firefox
-
-                if (height - currentPosition < 20) {
-                    switch (selected) {
-                        case "deposit":
-                            break
-                        case "withdrawal":
-                            break
-                        case "adjustment":
-                            break
-                    }
-                }
-            }
-        },
     },
-    mounted() {
-        window.addEventListener("scroll", this.checkScrollDown)
-    },
+    // mounted() {
+    //     // scroll down to load more data
+    //     window.addEventListener(
+    //         "touchend",
+    //         (e) => this.checkScrollDown(e),
+    //         false
+    //     )
+    // },
 }
 </script>
 <style lang="scss" scoped>

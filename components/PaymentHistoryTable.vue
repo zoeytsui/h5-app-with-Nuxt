@@ -1,12 +1,8 @@
 <template>
     <div>
-        <b-container v-if="selectedData.total == 0 ">
-            <b-row>
-                <b-col>
-                    NO Records
-                </b-col>
-            </b-row>
-        </b-container>
+        <div v-if="selectedData.total == 0" class="text-center">
+            {{keyStr("NORECORD")}}.
+        </div>
         <b-container class="records" v-for="i in count" :key="i" v-else>
             <span v-for="(date , j) in Object.keys(selectedData.dateList[i-1].tenRecords)" :key="j">
                 <b-row class="records-header">
@@ -45,14 +41,50 @@ export default {
     },
     data() {
         return {
-            count: 1,
             content: "",
+            count: "",
         }
     },
 
     methods: {
         keyStr(key) {
             return this.$csvHandler(this.contents.body, key)
+        },
+        checkScrollDown(e) {
+            console.log("Scrolled")
+            console.log(this.count)
+            // check if already scroll to the bottom
+            if (this.count < this.selectedData.dateList.length) {
+                if (
+                    document.documentElement.scrollHeight -
+                        document.documentElement.scrollTop -
+                        document.body.clientHeight <
+                    5
+                ) {
+                    this.count++
+                    console.log("selectedData.dateList.length")
+                    console.log(this.selectedData.dateList.length)
+                    console.log("this.count")
+                    console.log(this.count)
+                }
+            } else return
+        },
+    },
+    mounted() {
+        // scroll down to load more data
+        window.addEventListener(
+            "touchend",
+            (e) => this.checkScrollDown(e),
+            false
+        )
+    },
+    watch: {
+        selectedData: {
+            immediate: true,
+            deep: true,
+            handler() {
+                this.count = 1;
+            },
         },
     },
 }
