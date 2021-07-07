@@ -42,22 +42,24 @@ export default {
     this.updateState();
   },
   async fetch() {
-    // -=-=-=-=-=-= get_deal_type =-=-=-=-=-=-=-=
-    let plugin_get_deal_type = await this.$genSign({
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
+    // http://showdoc.pubhx.com/index.php?s=/50&page_id=1210
+    let get_deal_type_params = {
       s: "deposit.get_deal_type",
-      user: "",
-      timestamp: "",
-      token: ""
-    });
+      user: "app",
+      login: this.$auth.$storage.getUniversal("login"),
+      timestamp: Math.floor(Date.now() / 1000),
+      token: this.$auth.$storage.getUniversal("token")
+    };
+
+    let get_deal_type_sign = await this.$axios.$post(
+      "/lib/sign",
+      get_deal_type_params
+    );
 
     let get_deal_type = await this.$axios
-      .$get("/api/?s=deposit.get_deal_type", {
-        params: {
-          token: plugin_get_deal_type.token,
-          user: plugin_get_deal_type.user,
-          timestamp: plugin_get_deal_type.timestamp,
-          sign: plugin_get_deal_type.sign
-        }
+      .$get("/api?", {
+        params: { ...get_deal_type_params, ...get_deal_type_sign }
       })
       .then(res => res.data.shift());
 
@@ -66,71 +68,6 @@ export default {
     this.currency_name = get_deal_type.name;
     this.deal_type = get_deal_type.deal_type;
     this.currency_decimal = get_deal_type.decimal;
-
-    // FIXME: cannot get amount from the ssr
-    console.log("ssr", this.amount);
-
-    // -=-=-=-=-=-= deposit_index =-=-=-=-=-=-=-=
-    let plugin_deposit_index = await this.$genSign({
-      s: "deposit.index",
-      amount: "123",
-      display_type: "m",
-      deal_type: get_deal_type.deal_type,
-      currency_name: get_deal_type.name,
-      currency_decimal: get_deal_type.decimal,
-      deposit_type: "egpay",
-      track: "",
-      callbackUrl: "url",
-      remark: "",
-      login: "",
-      user: "",
-      timestamp: "",
-      token: ""
-    });
-
-    let deposit_index = await this.$axios
-      .$get("/api/?s=deposit.index", {
-        params: {
-          amount: "123",
-          display_type: "m",
-          deal_type: get_deal_type.deal_type,
-          currency_name: get_deal_type.name,
-          currency_decimal: get_deal_type.decimal,
-          deposit_type: "egpay",
-          callbackUrl: "url",
-          remark: "",
-          track: plugin_deposit_index.track,
-          login: plugin_deposit_index.login,
-          token: plugin_deposit_index.token,
-          user: plugin_deposit_index.user,
-          timestamp: plugin_deposit_index.timestamp,
-          sign: plugin_deposit_index.sign
-        }
-      })
-      .then(res => res.data);
-
-    // result
-    // console.log(deposit_index);
-    this.reback_sing = deposit_index.reback_sing;
-    this.formURL = deposit_index.url;
-
-    let testCall = await this.$axios
-
-    // -=-=-=-=-=-= deposit_callbackurl =-=-=-=-=-=-=-=
-    // let plugin_deposit_callbackurl = await this.$genSign({
-    //   encryptedText:'',
-    //   signedText:'',
-    //   reback_sing: deposit_index.reback_sing,
-    //   user: "",
-    //   timestamp: "",
-    //   token: ""
-    // });
-
-  },
-  watch: {
-    async amount(newVal, oldVal) {
-      console.log(await this.$genSign());
-    }
   },
   methods: {
     updateState() {
@@ -139,13 +76,81 @@ export default {
         prevPageURL: "/wallet",
         totalBalance: this.keyStr("Total Balance")
       });
+      // console.log(this.$store.state);
     },
     keyStr(key) {
       return this.$csvHandler(this.content.body, key);
     },
     async onSubmit(event) {
       event.preventDefault();
-      console.log("onSubmit", this.amount);
+
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- deposit_index
+      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1211
+      // TODO: GET callbackUrl from app
+      let deposit_index_params = {
+        s: "deposit.index",
+        amount: this.amount,
+        display_type: "m",
+        deal_type: this.deal_type,
+        currency_name: this.currency_name,
+        currency_decimal: this.currency_decimal,
+        deposit_type: "egpay",
+        track: this.$genTrack(),
+        callbackUrl: "wait from app",
+        remark: "",
+        user: "app",
+        login: this.$auth.$storage.getUniversal("login"),
+        timestamp: Math.floor(Date.now() / 1000),
+        token: this.$auth.$storage.getUniversal("token")
+      };
+
+      let deposit_index_sign = await this.$axios.$post(
+        "/lib/sign",
+        deposit_index_params
+      );
+
+      let deposit_index = await this.$axios
+        .$get("/api?", {
+          params: { ...deposit_index_params, ...deposit_index_sign }
+        })
+        .then(res => res.data);
+      // console.log(deposit_index);
+
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- EGPay
+      // TODO: GET result from EGPay
+      // let goEGPay = await this.$axios
+      //   .$get(deposit_index.url, deposit_index.form)
+      //   .then(res => res.data);
+
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- deposit_callbackurl
+      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1212
+      // TODO: update data from EGPay
+      let deposit_callbackurl_params = {
+        s: "deposit.callbackurl",
+        encryptedText: "wait to update",
+        signedText: "wait to update",
+        reback_sing: deposit_index.reback_sing,
+        user: "app",
+        timestamp: Math.floor(Date.now() / 1000),
+        token: this.$auth.$storage.getUniversal("token")
+      };
+
+      let deposit_callbackurl_sign = await this.$axios.$post(
+        "/lib/sign",
+        deposit_callbackurl_params
+      );
+
+      // TODO: test again when EGPay network working
+      let deposit_callbackurl = await this.$axios
+        .$get("/api?", {
+          params: { ...deposit_callbackurl_params, ...deposit_callbackurl_sign }
+        })
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.error(err);
+        });
     }
   }
 };

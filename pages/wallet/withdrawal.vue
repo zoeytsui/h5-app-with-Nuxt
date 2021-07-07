@@ -1,40 +1,52 @@
 <template>
   <div class="container withdrawal">
 
-    <span class="span-box">Currency(from API)</span>
+    <span class="span-box">{{currency_name}}</span>
 
     <hr>
 
-    <div class="main">
-      <p>{{keyStr("Recipient's Address")}}</p>
-      <div class="input-group">
-        <b-form-input v-model="amount" :placeholder="keyStr('Amount')"></b-form-input>
-        <div class="input-group-append">
-          <span class="input-group-text text-light bg-transparent border-0">Currency(from API)</span>
+    <b-form @submit="onSubmit">
+      <div class="main">
+
+        <p>{{keyStr("Recipient's Address")}}</p>
+        <div class="input-group">
+          <b-form-input v-model="address" :placeholder="keyStr('Address')"></b-form-input>
+          <div class="input-group-append">
+            <span class="input-group-text text-light bg-transparent border-0 pt-0 align-middle"><img src="~/assets/wallet/qr-code.png"></span>
+          </div>
+        </div>
+
+        <p>{{keyStr("Withdrawal Amount")}}</p>
+        <div class="input-group">
+          <b-form-input v-model="amount" :placeholder="keyStr('Amount')"></b-form-input>
+          <div class="input-group-append">
+            <span class="input-group-text text-light bg-transparent border-0">{{currency_name}}</span>
+          </div>
         </div>
       </div>
 
-      <p>{{keyStr("Withdrawal Amount")}}</p>
-      <div class="input-group">
-        <b-form-input v-model="amount" :placeholder="keyStr('Amount')"></b-form-input>
-        <div class="input-group-append">
-          <span class="input-group-text text-light bg-transparent border-0">Currency(from API)</span>
-        </div>
+      <hr>
+
+      <div class="d-flex align-items-center justify-content-between">
+        <p>{{keyStr("Transaction fee")}}</p>
+        <p>
+          <span>{{transactionFee}}</span>
+          <span>{{deal_type}}</span>
+        </p>
       </div>
-    </div>
 
-    <hr>
+      <hr>
 
-    <p>{{keyStr("Transaction fee")}}</p>
+      <div class="d-flex flex-column align-items-center justify-content-between">
+        <p>{{keyStr("Actual withdrawal")}}</p>
+        <h4>
+          <span>{{actualWithdrawal}}</span>
+          <span>{{deal_type}}</span>
+        </h4>
+      </div>
 
-    <hr>
-
-    <p>{{keyStr("Actual withdrawal")}}</p>
-
-    <h4>{{ 'xxxx USDT' }}</h4>
-
-    <b-button type="submit" id="btn-export" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
-
+      <b-button type="submit" id="btn-export" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
+    </b-form>
   </div>
 </template>
 
@@ -43,15 +55,55 @@ export default {
   layout: "wallet",
   data() {
     return {
-      amount: null
+      currency_decimal: null,
+      currency_name: null,
+      deal_type: null,
+      fee: null,
+      amount: null,
+      address: null
     };
   },
-  async asyncData({ $content, app }) {
-    const content = await $content("wallet").fetch();
-    return { content, app };
+  computed: {
+    transactionFee() {
+      return (this.amount * `${this.fee / 100}`).toFixed(3);
+    },
+    actualWithdrawal() {
+      return this.amount - this.transactionFee;
+    }
+  },
+  async asyncData(context) {
+    const content = await context.$content("wallet").fetch();
+    return { content };
   },
   created() {
     this.updateState();
+  },
+  async fetch() {
+    // -=-=-=-=-=-= get_deal_type =-=-=-=-=-=-=-=
+    let plugin_get_deal_type = await this.$genSign({
+      s: "withdraw.get_deal_type",
+      user: "",
+      timestamp: "",
+      token: ""
+    });
+
+    let get_deal_type = await this.$axios
+      .$get("/api/?s=withdraw.get_deal_type", {
+        params: {
+          token: plugin_get_deal_type.token,
+          user: plugin_get_deal_type.user,
+          timestamp: plugin_get_deal_type.timestamp,
+          sign: plugin_get_deal_type.sign
+        }
+      })
+      .then(res => res.data.shift());
+
+    // result
+    console.log(get_deal_type);
+    this.fee = get_deal_type.fee;
+    this.deal_type = get_deal_type.deal_type;
+    this.currency_name = get_deal_type.name;
+    this.currency_decimal = get_deal_type.decimal;
   },
   methods: {
     updateState() {
@@ -62,13 +114,17 @@ export default {
       });
     },
     keyStr(key) {
-      return this.app.$csvHandler(this.content.body, key);
+      return this.$csvHandler(this.content.body, key);
+    },
+    async onSubmit(event) {
+      event.preventDefault();
+      // TODO: update value to fetch
+      console.log("onSubmit", this.amount);
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-$border-color: #25d6cd54;
 .withdrawal {
   color: #fff;
   .span-box {
@@ -81,21 +137,31 @@ $border-color: #25d6cd54;
     margin: 1rem 0;
     border-color: $border-color !important;
   }
-  #btn-export {
-    @include button-green;
-  }
+  form {
+    p {
+      margin: 0;
+    }
+    .main {
+      p {
+        margin: 1rem 0;
+      }
+    }
+    #btn-export {
+      @include button-green;
+    }
 
-  // hide the arrows of input field
-  /* Chrome, Safari, Edge, Opera */
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
+    // hide the arrows of input field
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
 
-  /* Firefox */
-  input[type="number"] {
-    -moz-appearance: textfield;
+    /* Firefox */
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
   }
 }
 </style>
