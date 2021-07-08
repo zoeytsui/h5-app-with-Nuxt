@@ -32,78 +32,57 @@ export default {
     async asyncData(context) {
         const content = await context.$content("wallet").fetch()
 
-        let depositplugin = await context.$genSign({
-            s: "deposit.get_list",
-            login: "",
+        const params = {
             page: 1,
-            pageSize: 99,
-            token: "",
-            user: "",
-            timestamp: "",
-        })
+            pageSize: 500,
+            user: "app",
+            login: context.$auth.$storage.getUniversal("login"),
+            timestamp: Math.floor(Date.now() / 1000),
+            token: context.$auth.$storage.getUniversal("token"),
+        }
 
+        // for deposit
+        let depositSign = await context.$axios.$post("/lib/sign", {
+            ...params,
+            s: "deposit.get_list",
+        })
         let depositList = await context.$axios
             .$get(`/api/?s=deposit.get_list`, {
                 params: {
-                    login: depositplugin.login,
-                    page: 1,
-                    pageSize: 99,
-                    token: depositplugin.token,
-                    user: depositplugin.user,
-                    timestamp: depositplugin.timestamp,
-                    sign: depositplugin.sign,
+                    ...params,
+                    ...depositSign,
                 },
             })
             .catch((err) => {
                 console.log(err)
             })
 
-        let withdrawalPlugin = await context.$genSign({
+        //for withdrawal Data
+        let withdrawalSign = await context.$axios.$post("/lib/sign", {
+            ...params,
             s: "withdraw.get_list",
-            login: "",
-            page: 1,
-            pageSize: 99,
-            token: "",
-            user: "",
-            timestamp: "",
         })
-
         let withdrawalList = await context.$axios
             .$get(`/api/?s=withdraw.get_list`, {
                 params: {
-                    login: withdrawalPlugin.login,
-                    page: 1,
-                    pageSize: 99,
-                    token: withdrawalPlugin.token,
-                    user: withdrawalPlugin.user,
-                    timestamp: withdrawalPlugin.timestamp,
-                    sign: withdrawalPlugin.sign,
+                    ...params,
+                    ...withdrawalSign,
                 },
             })
             .catch((err) => {
                 console.log(err)
             })
 
-        let adjustmentPlugin = await context.$genSign({
+        //for adjustment Data
+        let adjustmentSign = await context.$axios.$post("/lib/sign", {
+            ...params,
             s: "bounty.get_list",
-            login: "",
-            page: 1,
-            pageSize: 99,
-            token: "",
-            user: "",
-            timestamp: "",
         })
-
         let adjustmentList = await context.$axios
             .$get(`/api/?s=bounty.get_list`, {
                 params: {
-                    login: adjustmentPlugin.login,
-                    page: 1,
-                    pageSize: 99,
-                    token: adjustmentPlugin.token,
-                    user: adjustmentPlugin.user,
-                    timestamp: adjustmentPlugin.timestamp,
-                    sign: adjustmentPlugin.sign,
+                    ...params,
+                    ...adjustmentSign,
                 },
             })
             .catch((err) => {
@@ -127,6 +106,7 @@ export default {
                 adjustmentList.msg,
             ]
         }
+
         return { content, errorMsg }
     },
 
@@ -173,24 +153,29 @@ export default {
             this.selected = box
         },
         //converting data to the suitable format
+        //1. Check if there are any records
+        //2. Convert data to 10 records per obj
+        //3. grouping data with same date for counting
+        //4. Add "," to the amount
         convertData(data_list) {
-            let dateList = []
+            let dataList = []
             let count = 0
-            let tenRecords = "tenRecords"
             let total = data_list.count
             if (total > 0) {
                 for (let i = 0; i < data_list.list.length; i++) {
                     if (i == 0 || i % 10 == 0) {
                         count++
-                        dateList.push({ count, tenRecords: [] })
+                        dataList.push({ count, tenRecords: [] })
                     }
                     if (
-                        dateList[count - 1][tenRecords][data_list.list[i].date]
+                        dataList[count - 1]["tenRecords"][
+                            data_list.list[i].date
+                        ]
                     ) {
                         let amount = new Intl.NumberFormat().format(
                             data_list.list[i].money
                         )
-                        dateList[count - 1][tenRecords][
+                        dataList[count - 1]["tenRecords"][
                             data_list.list[i].date
                         ].records.push({
                             time: data_list.list[i].time,
@@ -215,13 +200,13 @@ export default {
                                 currency: data_list.list[i].currency_name,
                             },
                         ]
-                        dateList[count - 1][tenRecords][
+                        dataList[count - 1]["tenRecords"][
                             data_list.list[i].date
                         ] = { records, date }
                     }
                 }
             }
-            return { dateList, total }
+            return { dataList, total }
         },
 
         convertDateFormat(mydate) {
@@ -243,14 +228,6 @@ export default {
             return date.getDate() + " " + month
         },
     },
-    // mounted() {
-    //     // scroll down to load more data
-    //     window.addEventListener(
-    //         "touchend",
-    //         (e) => this.checkScrollDown(e),
-    //         false
-    //     )
-    // },
 }
 </script>
 <style lang="scss" scoped>

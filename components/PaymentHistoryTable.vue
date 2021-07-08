@@ -4,13 +4,13 @@
             {{keyStr("NORECORD")}}.
         </div>
         <b-container class="records" v-for="i in count" :key="i" v-else>
-            <span v-for="(date , j) in Object.keys(selectedData.dateList[i-1].tenRecords)" :key="j">
+            <span v-for="(date , j) in Object.keys(selectedData.dataList[i-1].tenRecords)" :key="j">
                 <b-row class="records-header py-1">
-                    <b-col sm="3" cols="3" class="pr-0" v-html="selectedData.dateList[i-1].tenRecords[date].date"></b-col>
-                    <b-col sm="4" cols="6" v-html="selectedData.dateList[i-1].tenRecords[date].records.length + ' Records'"></b-col>
+                    <b-col sm="3" cols="3" class="pr-0" v-html="selectedData.dataList[i-1].tenRecords[date].date"></b-col>
+                    <b-col sm="4" cols="6" v-html="selectedData.dataList[i-1].tenRecords[date].records.length + ' Records'"></b-col>
                     <b-col sm="5" cols="3"></b-col>
                 </b-row>
-                <span v-for="(record , k) in selectedData.dateList[i-1].tenRecords[date].records" :key="k">
+                <span v-for="(record , k) in selectedData.dataList[i-1].tenRecords[date].records" :key="k">
                     <b-row class="py-1">
                         <b-col sm="3" cols="3" v-html="record.time"></b-col>
                         <b-col sm="4" cols="5" class="text-break" v-html="'#' + record.order"></b-col>
@@ -57,7 +57,7 @@ export default {
         checkScrollDown(e) {
             // check if already scroll to the bottom
 
-            if (this.count < this.selectedData.dateList.length) {
+            if (this.count < this.selectedData.dataList.length) {
                 if (
                     document.documentElement.scrollHeight -
                         document.documentElement.scrollTop -
