@@ -6,6 +6,7 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
+    "uat": "cross-env NODE_ENV=DEVELOPMENT nuxt start ",
     "generate": "nuxt generate"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "nuxt-i18n": "^6.27.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "sass-loader": "^7.2.0"
   }
 }
