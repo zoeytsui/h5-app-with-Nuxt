@@ -90,6 +90,6 @@ export default {
 
   server: {
     host: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'uat' ? '0.0.0.0' : 'localhost',
-    port: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'uat' ? '8080' : '7070'
+    port: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'uat' ? '8001' : '7070'
   }
 }
