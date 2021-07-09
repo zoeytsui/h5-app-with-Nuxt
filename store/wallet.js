@@ -1,6 +1,6 @@
 export const state = () => ({
     currentPage: '',
-    prevPageURL: 'x60://me_page',
+    prevPageURL: '',
     totalBalance: '',
 })
 export const mutations = {

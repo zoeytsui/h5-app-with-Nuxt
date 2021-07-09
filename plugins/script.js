@@ -1,6 +1,6 @@
 export default (context, inject) => {
+    // pass csv content key
     inject(
-        // pass csv content key
         'csvHandler', (contentBody, keyStr) => {
             let lang = context.store.$i18n.getLocaleCookie().toUpperCase();
             let capkeyStr = keyStr.toUpperCase();
@@ -15,22 +15,28 @@ export default (context, inject) => {
             return ouputString;
         },
     ),
+        // gen api tack with login number + date
         inject(
-            // gen api tack with login number + date
             'genTrack', () => {
-                let date = new Date();
-                let components = [
-                    date.getFullYear(),
-                    date.getMonth() + 1,
-                    date.getDate(),
-                    date.getHours(),
-                    date.getMinutes(),
-                    date.getSeconds(),
-                    date.getMilliseconds()
-                ];
-                let loginUser = context.$auth.$storage.getUniversal("login");
-                var id = components.join("");
-                return loginUser + id;
+                let id = [
+                    new Date().getFullYear(),
+                    new Date().getMonth() + 1,
+                    new Date().getDate(),
+                    new Date().getHours(),
+                    new Date().getMinutes(),
+                    new Date().getSeconds(),
+                    new Date().getMilliseconds()
+                ].join("");
+                let str = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+                return id + str;
+            }
+        ),
+        inject(
+            'numFormatter', (value) => {
+                if (!value) return '0.00';
+                var intPart = Number(value) - Number(value) % 1;
+                var intPartFormat = intPart.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+                return intPartFormat;
             }
         )
 }

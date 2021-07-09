@@ -11,8 +11,13 @@
         <p>{{keyStr("Recipient's Address")}}</p>
         <div class="input-group">
           <b-form-input v-model="address" :placeholder="keyStr('Address')"></b-form-input>
-          <div class="input-group-append">
-            <span class="input-group-text text-light bg-transparent border-0 pt-0 align-middle"><img src="~/assets/wallet/qr-code.png"></span>
+          <div class="input-group-text text-light bg-transparent border-0 pt-0 align-middle">
+            <label for="file-input">
+              <img src="~/assets/wallet/qr-code.png">
+            </label>
+
+            <b-form-file v-model="QRCodePic" type="file" accept="image/*" id="file-input" style="display: none;" capture plain>
+            </b-form-file>
           </div>
         </div>
 
@@ -20,7 +25,7 @@
         <div class="input-group">
           <b-form-input v-model="amount" :placeholder="keyStr('Amount')"></b-form-input>
           <div class="input-group-append">
-            <span class="input-group-text text-light bg-transparent border-0">{{currency_name}}</span>
+            <span class="input-group-text text-light bg-transparent border-0">{{deal_type}}</span>
           </div>
         </div>
       </div>
@@ -45,6 +50,8 @@
         </h4>
       </div>
 
+      <div id="reader" width="600px"></div>
+
       <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
     </b-form>
   </div>
@@ -60,8 +67,17 @@ export default {
       deal_type: null,
       fee: null,
       amount: null,
-      address: null
+      address: null,
+      QRCodePic: null
     };
+  },
+  watch: {
+    QRCodePic() {
+      const html5Qrcode = new Html5Qrcode("reader");
+      html5Qrcode.scanFile(this.QRCodePic, false).then(decodedText => {
+        this.address = decodedText;
+      });
+    }
   },
   computed: {
     transactionFee() {
@@ -88,31 +104,38 @@ export default {
   async fetch() {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
     // http://showdoc.pubhx.com/index.php?s=/50&page_id=1216
-    let get_deal_type_params = {
-      s: "withdraw.get_deal_type",
-      user: "app",
-      login: this.$auth.$storage.getUniversal("login"),
-      timestamp: Math.floor(Date.now() / 1000),
-      token: this.$auth.$storage.getUniversal("token")
-    };
+    try {
+      let get_deal_type_params = {
+        s: "withdraw.get_deal_type",
+        user: "app",
+        login: this.$auth.$storage.getUniversal("login"),
+        timestamp: Math.floor(Date.now() / 1000),
+        token: this.$auth.$storage.getUniversal("token")
+      };
 
-    let get_deal_type_sign = await this.$axios.$post(
-      "/lib/sign",
-      get_deal_type_params
-    );
+      let get_deal_type_sign = await this.$axios.$post(
+        "/lib/sign",
+        get_deal_type_params
+      );
 
-    let get_deal_type = await this.$axios
-      .$get("/api?", {
-        params: { ...get_deal_type_params, ...get_deal_type_sign }
-      })
-      .then(res => res.data.shift());
-
-    // result
-    // console.log(get_deal_type);
-    this.fee = get_deal_type.fee;
-    this.deal_type = get_deal_type.deal_type;
-    this.currency_name = get_deal_type.name;
-    this.currency_decimal = get_deal_type.decimal;
+      let get_deal_type = await this.$axios
+        .$get("/api?", {
+          params: { ...get_deal_type_params, ...get_deal_type_sign }
+        })
+        .then(res => {
+          if (res.ret !== 200) {
+            console.error(res.msg);
+            return;
+          }
+          let result = res.data.shift();
+          this.fee = result.fee;
+          this.deal_type = result.deal_type;
+          this.currency_name = result.name;
+          this.currency_decimal = result.decimal;
+        });
+    } catch (error) {
+      console.error(error);
+    }
   },
   methods: {
     updateState() {
@@ -170,6 +193,7 @@ export default {
 <style lang="scss" scoped>
 .withdrawal {
   color: #fff;
+  width: 90%;
   .span-box {
     padding: 0.2rem 0.4rem;
     background-color: #2beae2;

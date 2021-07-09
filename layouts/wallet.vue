@@ -39,7 +39,7 @@ export default {
 
 <style lang="scss">
 html {
-  font-family: "Helvetica Neue", Arial, sans-serif, -apple-system,
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif, -apple-system,
     BlinkMacSystemFont, "Source Sans Pro", "Segoe UI", Roboto;
   font-size: 16px;
   word-spacing: 1px;
@@ -49,8 +49,7 @@ html {
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   #wallet {
-    background: transparent linear-gradient(0deg, #47728e 0%, #1b2831 100%) 0%
-      0% no-repeat padding-box;
+    background: transparent linear-gradient(0deg, #1B2831 0%, #314E60 100%) 0% 0% no-repeat padding-box;
     min-height: 100vh;
     p {
       white-space: pre-wrap;

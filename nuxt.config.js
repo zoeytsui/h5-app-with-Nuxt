@@ -13,12 +13,14 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' }
     ],
+    script: [
+      { src: '/html5-qrcode.min.js' }
+    ]
   },
-  
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '@/plugins/script.js' },
-    { src: '@/plugins/auth.js', mode: 'server' },
+    { src: '@/plugins/script.js' }
   ],
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -30,7 +32,7 @@ export default {
     scss: ['@/assets/css/*.scss']
   },
 
-  serverMiddleware:[
+  serverMiddleware: [
     { path: '/lib', handler: '~/api/index.js' },
   ],
 
@@ -81,12 +83,6 @@ export default {
         '^/api': '/',
         changeOrigin: true
       }
-    },
-  },
-
-  auth: {
-    strategies: {
-      local: {},
     },
   },
 

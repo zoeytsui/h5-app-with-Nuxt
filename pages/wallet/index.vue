@@ -3,10 +3,10 @@
   <b-list-group class="mr-auto ml-auto justify-content-between ">
     <b-list-group-item :href="route + item.page" v-for="item,index in items" :key="index" class="d-flex align-items-center justify-content-center border-right-0 border-left-0 px-0">
       <div class="container d-flex align-items-center">
-        <img :src="item.icon" class="mr-3" width="35px" />
-        <h5>{{item.name}}</h5>
+        <img :src="item.icon" class="icon mr-3" width="35px" />
+        <p>{{item.name}}</p>
       </div>
-      <img src="~assets/wallet/Arrow_Right_white.png">
+      <img class="arrow" src="~assets/wallet/Arrow_Right_white.png">
     </b-list-group-item>
   </b-list-group>
 
@@ -51,14 +51,13 @@ export default {
     updateState() {
       this.$store.commit("wallet/updateState", {
         currentPage: this.keyStr("my wallet"),
-        // FIXME: URL not updated from store to page
         prevPageURL: "x60://me_page",
         totalBalance: this.keyStr("Total Balance")
       });
     },
     keyStr(key) {
       return this.$csvHandler(this.content.body, key);
-    },
+    }
   }
 };
 </script>
@@ -69,6 +68,16 @@ export default {
     background: transparent;
     color: #fff;
     border-color: $border-color !important;
+    p {
+      font-size: 1rem;
+      margin-bottom: 0;
+    }
+    .icon {
+      width: 1.3rem;
+    }
+    .arrow {
+      width: 0.4rem;
+    }
   }
 }
 </style>

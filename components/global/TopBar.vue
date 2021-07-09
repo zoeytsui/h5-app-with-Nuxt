@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <nav class="navbar navbar-dark container-fluid">
-      <n-link class="navbar-brand" :to="prevPageURL">
+      <n-link class="navbar-brand" id="prevPage" :to="prevPageURL">
         <img src="~assets/Arrow_l_blue.png" alt="">
         {{currentPage}}
       </n-link>
@@ -15,6 +15,21 @@ export default {
   props: {
     currentPage: String,
     prevPageURL: String
+  },
+  data() {
+    return {
+      back: null
+    };
+  },
+  mounted() {
+    if (this.currentPage === "My Wallet") {
+      this.backApp();
+    }
+  },
+  methods: {
+    async backApp() {
+      document.querySelector("#prevPage").setAttribute("href", "x60://me_page");
+    }
   }
 };
 </script>
