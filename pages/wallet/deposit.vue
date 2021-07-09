@@ -52,7 +52,6 @@ export default {
       let get_deal_type_params = {
         s: "deposit.get_deal_type",
         user: "app",
-        login: this.$auth.$storage.getUniversal("login"),
         timestamp: Math.floor(Date.now() / 1000),
         token: this.$auth.$storage.getUniversal("token")
       };
@@ -123,7 +122,6 @@ export default {
           "/lib/sign",
           deposit_index_params
         );
-
         let deposit_index = await this.$axios
           .$get("/api?", {
             params: { ...deposit_index_params, ...deposit_index_sign }
