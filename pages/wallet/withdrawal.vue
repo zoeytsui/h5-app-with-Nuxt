@@ -23,7 +23,7 @@
 
         <p>{{keyStr("Withdrawal Amount")}}</p>
         <div class="input-group">
-          <b-form-input v-model="amount" :placeholder="keyStr('Amount')"></b-form-input>
+          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')"></b-form-input>
           <div class="input-group-append">
             <span class="input-group-text text-light bg-transparent border-0">{{deal_type}}</span>
           </div>
