@@ -6,7 +6,7 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "uat": "cross-env NODE_ENV=DEVELOPMENT nuxt start ",
+    "uat": "cross-env NODE_ENV=uat nuxt start ",
     "generate": "nuxt generate"
   },
   "dependencies": {
