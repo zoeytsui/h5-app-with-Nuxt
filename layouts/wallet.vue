@@ -23,17 +23,17 @@ export default {
       return this.$store.state.wallet.totalBalance;
     }
   },
-  methods:{
-      changeBackground(){
-          if (this.currentPage == "Payment History"){
-              let wallet = document.querySelector('#wallet');
-              wallet.style.background = "#314553";
-          }
-      },
+  methods: {
+    changeBackground() {
+      if (this.currentPage == "Payment History") {
+        let wallet = document.querySelector("#wallet");
+        wallet.style.background = "#314553";
+      }
+    }
   },
-  mounted(){
-      this.changeBackground()
-  },
+  mounted() {
+    this.changeBackground();
+  }
 };
 </script>
 
@@ -49,10 +49,36 @@ html {
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   #wallet {
-    background: transparent linear-gradient(0deg, #1B2831 0%, #314E60 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(0deg, #1b2831 0%, #314e60 100%) 0%
+      0% no-repeat padding-box;
     min-height: 100vh;
     p {
       white-space: pre-wrap;
+    }
+  }
+
+  // the modal showing after complete withdrawal
+  .modal-dialog {
+    .modal-content {
+      background: url("~/assets/wallet/modal_complete_box.png") no-repeat;
+      background-size: cover;
+      border: 0;
+      .modal-body {
+        top: 2rem;
+        p {
+          font-weight: 700;
+          text-align: center;
+        }
+      }
+      .modal-footer {
+        border-top: 0;
+        justify-content: center;
+        button {
+          @include button-green;
+          color: #fff;
+          border: 0;
+        }
+      }
     }
   }
 }
@@ -62,14 +88,5 @@ html {
 *::after {
   box-sizing: border-box;
   margin: 0;
-}
-.totalbalance {
-  text-align: center;
-  margin: 0 auto;
-  color: #fff;
-  width: 80%;
-  h2 {
-    color: #2beae2;
-  }
 }
 </style>

@@ -1,21 +1,18 @@
 export default (context, inject) => {
-    // pass csv content key
-    inject(
-        'csvHandler', (contentBody, keyStr) => {
-            let lang = context.store.$i18n.getLocaleCookie().toUpperCase();
-            let capkeyStr = keyStr.toUpperCase();
-            let keyArr = contentBody;
-            let ouputString;
-
-            for (let i in keyArr) {
-                keyArr[i].KEY === capkeyStr
-                    ? (ouputString = keyArr[i][`${lang}`])
-                    : undefined;
-            }
-            return ouputString;
-        },
-    ),
-        // gen api tack with login number + date
+        // pass csv content key
+        inject(
+            'csvHandler', (keyArr, keyStr) => {
+                let lang = context.store.$i18n.defaultLocale.toUpperCase();
+                let ouputString;
+                for (let i in keyArr) {
+                    keyArr[i].KEY === keyStr.toUpperCase()
+                        ? (ouputString = keyArr[i][`${lang}`])
+                        : undefined;
+                }
+                return ouputString;
+            },
+        ),
+        // gen api track with date + random string
         inject(
             'genTrack', () => {
                 let id = [
@@ -31,12 +28,11 @@ export default (context, inject) => {
                 return id + str;
             }
         ),
+        // Number formatting with thousand separator
         inject(
             'numFormatter', (value) => {
-                if (!value) return '0.00';
-                var intPart = Number(value) - Number(value) % 1;
-                var intPartFormat = intPart.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
-                return intPartFormat;
+                if (!value || !Number(value)) return '0.00';
+                return new Intl.NumberFormat(`${context.i18n.defaultLocale}`).format(value)
             }
         )
 }

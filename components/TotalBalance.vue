@@ -12,63 +12,83 @@ export default {
   props: {
     totalBalance: String
   },
-  data() {
-    return {
-      balance: null,
-      currency: null
-    };
+  computed: {
+    isSetFundPass() {
+      return this.$store.state.wallet.userInfo.isSetFundPass;
+    },
+    currency() {
+      return this.$store.state.wallet.userInfo.currency;
+    },
+    balance() {
+      return this.$numFormatter(this.$store.state.wallet.userInfo.balance);
+    }
   },
   created() {
-    this.getLogin();
+    this.getQueryStr();
   },
   methods: {
-    getLogin() {
+    async getQueryStr() {
       let queryStr = this.$nuxt.context.query;
-      if (!process.browser) return;
 
-      // switch (true) {
-      //   case queryStr.token:
-      //     this.$auth.$storage.setUniversal("token", queryStr.token);
+      switch (true) {
+        // senario 1: query string exsited
+        case Boolean(queryStr.token):
+          this.$auth.$storage.setUniversal("token", queryStr.token);
 
-      //   case queryStr.login:
-      //     this.$auth.$storage.setUniversal("login", queryStr.login);
+        case Boolean(queryStr.login):
+          this.$auth.$storage.setUniversal("login", queryStr.login);
+          break;
 
-      //   case !queryStr.token:
-      //     this.$auth.$storage.getUniversal("token") !== undefined
-      //       ? (this.token = this.$auth.$storage.getUniversal("token"))
-      //       : console.error("token - Query String required");
+        // // senario 2: query string not exsited
+        case !queryStr.token:
+          this.$auth.$storage.getUniversal("token") !== undefined
+            ? (this.token = this.$auth.$storage.getUniversal("token"))
+            : console.error("token - Query String required");
 
-      //   case !queryStr.login:
-      //     this.$auth.$storage.getUniversal("login") !== undefined
-      //       ? (this.login = this.$auth.$storage.getUniversal("login"))
-      //       : console.error("login - Query String required");
-      // }
-
-      // senario 1: query string exsited
-      // console.log(!queryStr.token &&!queryStr.login);
-      if (Object.keys(queryStr).length === 4) {
-        this.$auth.$storage.setUniversal("token", queryStr.token);
-        this.$auth.$storage.setUniversal("login", queryStr.login);
-        this.$auth.$storage.setUniversal("balance", queryStr.balance);
-        this.$auth.$storage.setUniversal("currency", queryStr.currency);
-        this.balance = this.$numFormatter(queryStr.balance);;
-        this.currency = queryStr.currency;
+        case !queryStr.login:
+          this.$auth.$storage.getUniversal("login") !== undefined
+            ? (this.login = this.$auth.$storage.getUniversal("login"))
+            : console.error("login - Query String required");
+          break;
       }
-      // senario 2: query string not exsited
-      else if (Object.keys(queryStr).length !== 4) {
-        this.$auth.$storage.getUniversal("balance") !== undefined
-          ? (this.balance = this.$numFormatter(this.$auth.$storage.getUniversal("balance")))
-          : console.error("balance - Query String required");
+      this.getUserInfo();
+    },
+    async getUserInfo() {
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- getUserInfo
+      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1302
+      try {
+        let getUserInfo_params = {
+          s: "members.getUserInfo",
+          token: this.$auth.$storage.getUniversal("token"),
+          login: this.$auth.$storage.getUniversal("token"),
+          timestamp: Math.floor(Date.now() / 1000),
+          user: "app"
+        };
 
-        this.$auth.$storage.getUniversal("currency") !== undefined
-          ? (this.currency = this.$auth.$storage.getUniversal("currency"))
-          : console.error("currency - Query String required");
-
-        if (this.$auth.$storage.getUniversal("login") === undefined)
-          console.error("login - Query String required");
-
-        if (this.$auth.$storage.getUniversal("token") === undefined)
-          console.error("token - Query String required");
+        let getUserInfo_sign = await this.$axios.$post(
+          "/lib/sign",
+          getUserInfo_params
+        );
+        let getUserInfo = await this.$axios
+          .$get("/api", {
+            params: { ...getUserInfo_params, ...getUserInfo_sign }
+          })
+          .then(res => {
+            if (res.ret !== 200) {
+              console.error(res.msg);
+              return;
+            }
+            this.$store.commit("wallet/updateUserInfo", {
+              isSetFundPass: res.data.isSetFundPass,
+              balance: Object.values(res.data.balance)[0],
+              currency: Object.keys(res.data.balance)[0]
+            });
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } catch (error) {
+        console.error(error);
       }
     }
   }

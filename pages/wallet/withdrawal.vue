@@ -54,6 +54,12 @@
 
       <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
     </b-form>
+
+    <b-modal v-model="modalShow" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
+      <p class="my-4">{{keyStr('Withdraw Completed')}}</p>
+      <p>{{order}}</p>
+    </b-modal>
+
   </div>
 </template>
 
@@ -68,7 +74,9 @@ export default {
       fee: null,
       amount: null,
       address: null,
-      QRCodePic: null
+      QRCodePic: null,
+      order: null,
+      modalShow: false
     };
   },
   watch: {
@@ -182,9 +190,12 @@ export default {
           params: { ...withdraw_index_params, ...withdraw_index_sign }
         })
         .then(res => {
-          console.log(res);
-          alert(`api msg said: ${res.msg}`);
-          this.$router.push({ path: "/wallet" });
+          if (res.ret !== 200) {
+            alert(`api msg said: ${res.msg}`);
+            return;
+          }
+          this.order = res.data.order;
+          this.modalShow = true;
         });
     }
   }
