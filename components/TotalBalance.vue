@@ -60,7 +60,7 @@ export default {
         let getUserInfo_params = {
           s: "members.getUserInfo",
           token: this.$auth.$storage.getUniversal("token"),
-          login: this.$auth.$storage.getUniversal("token"),
+          login: this.$auth.$storage.getUniversal("login"),
           timestamp: Math.floor(Date.now() / 1000),
           user: "app"
         };
