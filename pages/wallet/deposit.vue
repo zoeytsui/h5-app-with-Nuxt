@@ -51,7 +51,7 @@ export default {
     try {
       let get_deal_type_params = {
         s: "deposit.get_deal_type",
-        user: "app",
+        user: "ucenter",
         timestamp: Math.floor(Date.now() / 1000),
         token: this.$auth.$storage.getUniversal("token")
       };
@@ -112,7 +112,7 @@ export default {
           track: this.$genTrack(),
           callbackUrl: "wait from app",
           remark: "",
-          user: "app",
+          user: "ucenter",
           login: this.$auth.$storage.getUniversal("login"),
           timestamp: Math.floor(Date.now() / 1000),
           token: this.$auth.$storage.getUniversal("token")
@@ -153,7 +153,7 @@ export default {
           encryptedText: "wait to update",
           signedText: "wait to update",
           reback_sing: deposit_index.reback_sing,
-          user: "app",
+          user: "ucenter",
           timestamp: Math.floor(Date.now() / 1000),
           token: this.$auth.$storage.getUniversal("token")
         };

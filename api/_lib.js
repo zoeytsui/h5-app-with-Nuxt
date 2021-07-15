@@ -19,7 +19,7 @@ const getTimestamp = async () => {
 
 const getUser = () => {
     try {
-        return 'app'
+        return 'ucenter'
     } catch (error) {
         console.error(error);
     }
@@ -50,7 +50,7 @@ const getSign = (obj) => {
         for (let i of keys) {
             str += obj[i]
         }
-        return md5(str + 'K5AgjT7yUq2gwUbIaSHBPQeaknbdlfob')
+        return md5(str + 'aajWy7hq1XzcFey1lYozcicA6sDpLCut')
     } catch (error) {
         console.error(error);
     }

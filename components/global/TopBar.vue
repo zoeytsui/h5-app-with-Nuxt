@@ -1,7 +1,11 @@
 <template>
   <div class="container-fluid">
     <nav class="navbar navbar-dark container-fluid">
-      <n-link class="navbar-brand" id="prevPage" :to="prevPageURL">
+      <a class="navbar-brand" v-if="isApp" :href="appPage">
+        <img src="~assets/Arrow_l_blue.png" alt="">
+        {{currentPage}}
+      </a>
+      <n-link class="navbar-brand" v-else :to="prevPageURL">
         <img src="~assets/Arrow_l_blue.png" alt="">
         {{currentPage}}
       </n-link>
@@ -18,17 +22,14 @@ export default {
   },
   data() {
     return {
-      back: null
+      isApp: false,
+      appPage: null
     };
   },
-  mounted() {
-    if (this.currentPage === "My Wallet") {
-      this.backApp();
-    }
-  },
-  methods: {
-    async backApp() {
-      document.querySelector("#prevPage").setAttribute("href", "x60://me_page");
+  created() {
+    if (this.$route.path === "/wallet") {
+      this.isApp = true;
+      this.appPage = "x60://me_page";
     }
   }
 };

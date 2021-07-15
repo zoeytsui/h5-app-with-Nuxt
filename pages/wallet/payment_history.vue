@@ -35,7 +35,7 @@ export default {
         const params = {
             page: 1,
             pageSize: 500,
-            user: "app",
+            user: "ucenter",
             login: context.$auth.$storage.getUniversal("login"),
             timestamp: Math.floor(Date.now() / 1000),
             token: context.$auth.$storage.getUniversal("token"),

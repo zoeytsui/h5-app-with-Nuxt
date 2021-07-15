@@ -39,7 +39,7 @@ export default {
           this.$auth.$storage.setUniversal("login", queryStr.login);
           break;
 
-        // // senario 2: query string not exsited
+        // senario 2: query string not exsited
         case !queryStr.token:
           this.$auth.$storage.getUniversal("token") !== undefined
             ? (this.token = this.$auth.$storage.getUniversal("token"))
@@ -62,7 +62,7 @@ export default {
           token: this.$auth.$storage.getUniversal("token"),
           login: this.$auth.$storage.getUniversal("login"),
           timestamp: Math.floor(Date.now() / 1000),
-          user: "app"
+          user: "ucenter"
         };
 
         let getUserInfo_sign = await this.$axios.$post(

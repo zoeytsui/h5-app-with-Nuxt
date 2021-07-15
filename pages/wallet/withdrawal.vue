@@ -55,8 +55,8 @@
       <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
     </b-form>
 
-    <b-modal v-model="modalShow" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
-      <p class="my-4">{{keyStr('Withdraw Completed')}}</p>
+    <b-modal v-model="modalShow" id="withdrawal-completed-modal" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
+      <p class="my-4">{{keyStr('Withdrawal Completed')}}</p>
       <p>{{order}}</p>
     </b-modal>
 
@@ -108,6 +108,11 @@ export default {
   },
   created() {
     this.updateState();
+
+    // if not set fund password go back to app
+    if (process.browser && !this.$store.state.wallet.userInfo.isSetFundPass) {
+        window.location.href = "x60://set_fund_password_page";
+    }
   },
   async fetch() {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
@@ -115,7 +120,7 @@ export default {
     try {
       let get_deal_type_params = {
         s: "withdraw.get_deal_type",
-        user: "app",
+        user: "ucenter",
         login: this.$auth.$storage.getUniversal("login"),
         timestamp: Math.floor(Date.now() / 1000),
         token: this.$auth.$storage.getUniversal("token")
@@ -162,7 +167,6 @@ export default {
 
       // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- withdraw_index
       // http://showdoc.pubhx.com/index.php?s=/50&page_id=1217
-      // TODO: GET callbackUrl from app
       let withdraw_index_params = {
         s: "withdraw.index",
         amount: this.amount,
@@ -173,7 +177,7 @@ export default {
         fee: this.fee,
         miner_fee: "",
         remark: "",
-        user: "app",
+        user: "ucenter",
         login: this.$auth.$storage.getUniversal("login"),
         timestamp: Math.floor(Date.now() / 1000),
         token: this.$auth.$storage.getUniversal("token")
@@ -195,7 +199,7 @@ export default {
             return;
           }
           this.order = res.data.order;
-          this.modalShow = true;
+          window.location.href = "x60://check_fund_password_page";
         });
     }
   }
