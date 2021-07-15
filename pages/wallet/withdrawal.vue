@@ -81,10 +81,14 @@ export default {
   },
   watch: {
     QRCodePic() {
-      const html5Qrcode = new Html5Qrcode("reader");
-      html5Qrcode.scanFile(this.QRCodePic, false).then(decodedText => {
-        this.address = decodedText;
-      });
+      try {
+        const html5Qrcode = new Html5Qrcode("reader");
+        html5Qrcode.scanFile(this.QRCodePic, false).then(decodedText => {
+          this.address = decodedText;
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   },
   computed: {
@@ -111,7 +115,7 @@ export default {
 
     // if not set fund password go back to app
     if (process.browser && !this.$store.state.wallet.userInfo.isSetFundPass) {
-        window.location.href = "x60://set_fund_password_page";
+      window.location.href = "x60://set_fund_password_page";
     }
   },
   async fetch() {
