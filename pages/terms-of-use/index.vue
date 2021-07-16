@@ -96,7 +96,7 @@ export default {
 <style lang="scss" scoped>
 #terms-of-use {
   padding: 2rem;
-  margin-bottom: 3.3rem;
+  padding-bottom: 4rem;
   background: border-box #f2f3f3;
   border-radius: 20px;
   h2 {
@@ -121,11 +121,6 @@ export default {
     color: #1b2831;
     background: #2beae2;
     border-color: #2beae2;
-  }
-  .form-check {
-    label {
-      text-decoration: underline;
-    }
   }
 }
 </style>
