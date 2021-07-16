@@ -49,9 +49,10 @@ export default {
   },
   methods: {
     updateState() {
+      // please check this correct prevPageURL in TopBar component
       this.$store.commit("wallet/updateState", {
         currentPage: this.keyStr("my wallet"),
-        prevPageURL: "x60://me_page",
+        prevPageURL: "x60://back_to_page",
         totalBalance: this.keyStr("Total Balance")
       });
     },

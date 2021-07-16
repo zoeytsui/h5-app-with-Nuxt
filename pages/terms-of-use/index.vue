@@ -40,7 +40,7 @@ export default {
         button: {
           caption: null,
           disabled: true,
-          url: "x60://me_page"
+          url: "x60://back_to_page"
         }
       }
     };

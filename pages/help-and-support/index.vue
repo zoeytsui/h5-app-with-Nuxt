@@ -17,7 +17,7 @@
 export default {
   data() {
     return {
-      prevPageURL: "x60://me_page",
+      prevPageURL: "x60://back_to_page",
       page: {
         title: null,
         description: null,

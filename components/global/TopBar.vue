@@ -29,7 +29,7 @@ export default {
   created() {
     if (this.$route.path === "/wallet") {
       this.isApp = true;
-      this.appPage = "x60://me_page";
+      this.appPage = "x60://back_to_page";
     }
   }
 };

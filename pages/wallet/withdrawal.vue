@@ -15,9 +15,9 @@
             <label for="file-input">
               <img src="~/assets/wallet/qr-code.png">
             </label>
-
-            <b-form-file v-model="QRCodePic" type="file" accept="image/*" id="file-input" style="display: none;" capture plain>
-            </b-form-file>
+            <!-- FIXME: dev use -->
+            <b-form-file v-model="QRCodePic" type="file" accept="image/*" id="file-input" capture plain></b-form-file>
+            <!-- <b-form-file v-model="QRCodePic" type="file" accept="image/*" id="file-input" style="display: none;" capture plain></b-form-file> -->
           </div>
         </div>
 
@@ -82,8 +82,9 @@ export default {
   watch: {
     QRCodePic() {
       try {
+        // FIXME: dev use: should not display reader 
         const html5Qrcode = new Html5Qrcode("reader");
-        html5Qrcode.scanFile(this.QRCodePic, false).then(decodedText => {
+        html5Qrcode.scanFile(this.QRCodePic, true).then(decodedText => {
           this.address = decodedText;
         });
       } catch (error) {
