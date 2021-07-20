@@ -27,7 +27,7 @@ export default {
     };
   },
   created() {
-    if (this.$route.path === "/wallet") {
+    if (this.$route.path === "/wallet" || this.$route.path === "/help-and-support") {
       this.isApp = true;
       this.appPage = "x60://back_to_page";
     }

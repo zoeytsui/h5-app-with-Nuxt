@@ -17,6 +17,7 @@
 export default {
   data() {
     return {
+      // please check this correct prevPageURL in TopBar component
       prevPageURL: "x60://back_to_page",
       page: {
         title: null,

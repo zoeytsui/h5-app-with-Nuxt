@@ -15,9 +15,7 @@
             <label for="file-input">
               <img src="~/assets/wallet/qr-code.png">
             </label>
-            <!-- FIXME: dev use -->
-            <b-form-file v-model="QRCodePic" type="file" accept="image/*" id="file-input" capture plain></b-form-file>
-            <!-- <b-form-file v-model="QRCodePic" type="file" accept="image/*" id="file-input" style="display: none;" capture plain></b-form-file> -->
+            <b-form-file v-model="QRCodePic" type="file" accept="image/*" id="file-input" style="display: none;" capture plain></b-form-file>
           </div>
         </div>
 
@@ -82,9 +80,8 @@ export default {
   watch: {
     QRCodePic() {
       try {
-        // FIXME: dev use: should not display reader 
         const html5Qrcode = new Html5Qrcode("reader");
-        html5Qrcode.scanFile(this.QRCodePic, true).then(decodedText => {
+        html5Qrcode.scanFile(this.QRCodePic, false).then(decodedText => {
           this.address = decodedText;
         });
       } catch (error) {
@@ -105,6 +102,9 @@ export default {
     },
     isDisabled() {
       return this.amount !== null ? false : true;
+    },
+    isSetFundPass() {
+      return this.$store.state.wallet.userInfo.isSetFundPass;
     }
   },
   async asyncData(context) {
@@ -112,12 +112,13 @@ export default {
     return { content };
   },
   created() {
-    this.updateState();
-
     // if not set fund password go back to app
-    if (process.browser && !this.$store.state.wallet.userInfo.isSetFundPass) {
-      window.location.href = "x60://set_fund_password_page";
-    }
+    setTimeout(() => {
+      if (process.client && !this.isSetFundPass) {
+        window.location.href = "x60://set_fund_password_page";
+      }
+    }, 500);
+    this.updateState();
   },
   async fetch() {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type

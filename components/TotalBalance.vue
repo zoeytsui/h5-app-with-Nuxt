@@ -13,9 +13,6 @@ export default {
     totalBalance: String
   },
   computed: {
-    isSetFundPass() {
-      return this.$store.state.wallet.userInfo.isSetFundPass;
-    },
     currency() {
       return this.$store.state.wallet.userInfo.currency;
     },
@@ -51,46 +48,8 @@ export default {
             : console.error("login - Query String required");
           break;
       }
-      this.getUserInfo();
+      this.$store.dispatch("wallet/getUserInfo");
     },
-    async getUserInfo() {
-      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- getUserInfo
-      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1302
-      try {
-        let getUserInfo_params = {
-          s: "members.getUserInfo",
-          token: this.$auth.$storage.getUniversal("token"),
-          login: this.$auth.$storage.getUniversal("login"),
-          timestamp: Math.floor(Date.now() / 1000),
-          user: "ucenter"
-        };
-
-        let getUserInfo_sign = await this.$axios.$post(
-          "/lib/sign",
-          getUserInfo_params
-        );
-        let getUserInfo = await this.$axios
-          .$get("/api", {
-            params: { ...getUserInfo_params, ...getUserInfo_sign }
-          })
-          .then(res => {
-            if (res.ret !== 200) {
-              console.error(res.msg);
-              return;
-            }
-            this.$store.commit("wallet/updateUserInfo", {
-              isSetFundPass: res.data.isSetFundPass,
-              balance: Object.values(res.data.balance)[0],
-              currency: Object.keys(res.data.balance)[0]
-            });
-          })
-          .catch(err => {
-            console.error(err);
-          });
-      } catch (error) {
-        console.error(error);
-      }
-    }
   }
 };
 </script>
