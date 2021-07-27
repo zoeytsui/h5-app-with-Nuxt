@@ -49,7 +49,6 @@ export default {
     return { content };
   },
   created() {
-    this.forbidden_modal = true
     this.updateState();
   },
   async fetch() {
