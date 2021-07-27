@@ -53,9 +53,19 @@
       <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
     </b-form>
 
-    <b-modal v-model="modalShow" id="withdrawal-completed-modal" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
+    <b-modal v-model="withdrawal_modal" id="withdrawal-completed-modal" content-class="correct-modal" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
       <p class="my-4">{{keyStr('Withdrawal Completed')}}</p>
       <p>{{order}}</p>
+    </b-modal>
+
+    <b-modal v-model="forbidden_modal" content-class="error-modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
+      <p class="mt-4">{{keyStr('Action is forbidded.')}}</p>
+      <p><small>{{keyStr('Suspicious activity has been detected.')}}</small></p>
+    </b-modal>
+
+    <b-modal v-model="insufficient_modal" content-class="warn-modal" centered hide-header ok-only>
+      <p class="mt-4">{{keyStr('Insufficient fund.')}}</p>
+      <p><small>{{keyStr('Not enough fund to withdraw.')}}</small></p>
     </b-modal>
 
   </div>
@@ -74,7 +84,9 @@ export default {
       address: null,
       QRCodePic: null,
       order: null,
-      modalShow: false
+      withdrawal_modal: false,
+      forbidden_modal: false,
+      insufficient_modal: false
     };
   },
   watch: {
@@ -143,7 +155,7 @@ export default {
         })
         .then(res => {
           if (res.ret !== 200) {
-            console.error(res.msg);
+            console.error(`${res.ret}: ${res.msg}`);
             return;
           }
           let result = res.data.shift();
@@ -169,7 +181,6 @@ export default {
     },
     async onSubmit(event) {
       event.preventDefault();
-      alert("loading");
 
       // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- withdraw_index
       // http://showdoc.pubhx.com/index.php?s=/50&page_id=1217
@@ -200,13 +211,55 @@ export default {
           params: { ...withdraw_index_params, ...withdraw_index_sign }
         })
         .then(res => {
+          if (res.ret === 400) {
+            this.insufficient_modal = true;
+            return;
+          }
+          if (res.ret === 2206) {
+            this.forbidden_modal = true;
+            return;
+          }
           if (res.ret !== 200) {
-            alert(`api msg said: ${res.msg}`);
+            console.error(`${res.ret}: ${res.msg}`);
             return;
           }
           this.order = res.data.order;
           window.location.href = "x60://check_fund_password_page";
         });
+    },
+    async userLogout() {
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- members_logout
+      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1196
+      try {
+        let members_logout_params = {
+          s: "members.logout",
+          user: "ucenter",
+          login: this.$auth.$storage.getUniversal("login"),
+          timestamp: Math.floor(Date.now() / 1000),
+          token: this.$auth.$storage.getUniversal("token")
+        };
+
+        let members_logout_sign = await this.$axios.$post(
+          "/lib/sign",
+          members_logout_params
+        );
+        let members_logout = await this.$axios
+          .$get("/api?", {
+            params: { ...members_logout_params, ...members_logout_sign }
+          })
+          .then(res => {
+            if (res.ret !== 200) {
+              console.error(`${res.ret}: ${res.msg}`);
+              return;
+            }
+            return console.warn("Logout:" + res.data);
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 };

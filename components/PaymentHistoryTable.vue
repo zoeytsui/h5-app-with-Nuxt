@@ -1,7 +1,7 @@
 <template>
     <div :class="selectedBox" class="pb-5">
         <div v-if="selectedData.total == 0" class="text-center">
-            {{keyStr("NORECORD")}}.
+            {{keyStr("NO RECORD")}}.
         </div>
         <b-container class="records" v-for="i in count" :key="i" v-else>
             <span v-for="(date , j) in Object.keys(selectedData.dataList[i-1].tenRecords)" :key="j">

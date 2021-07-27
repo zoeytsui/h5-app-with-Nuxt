@@ -46,7 +46,7 @@ export const actions = {
                 })
                 .then(res => {
                     if (res.ret !== 200) {
-                        console.error(res.msg);
+                        console.error(`${res.ret}: ${res.msg}`);
                         return;
                     }
                     userInfo.isSetFundPass = res.data.isSetFundPass;

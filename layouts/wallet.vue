@@ -60,9 +60,7 @@ html {
   // the modal showing after complete withdrawal
   .modal-dialog {
     .modal-content {
-      background: url("~/assets/wallet/modal_complete_box.png") no-repeat;
-      background-size: cover;
-      border: 0;
+    border: 0;
       .modal-body {
         top: 2rem;
         p {
@@ -73,6 +71,9 @@ html {
       .modal-footer {
         border-top: 0;
         justify-content: center;
+        .btn-secondary {
+          @include button-grey;
+        }
         button {
           @include button-green;
           color: #fff;

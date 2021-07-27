@@ -18,6 +18,11 @@
       </b-form>
     </div>
 
+    <b-modal v-model="forbidden_modal" content-class="error-modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
+      <p class="mt-4">{{keyStr('Action is forbidded.')}}</p>
+      <p><small>{{keyStr('Suspicious activity has been detected.')}}</small></p>
+    </b-modal>
+
   </div>
 </template>
 
@@ -30,7 +35,8 @@ export default {
       currency_name: null,
       deal_type: null,
       amount: null,
-      reback_sing: null
+      reback_sing: null,
+      forbidden_modal: false
     };
   },
   computed: {
@@ -43,6 +49,7 @@ export default {
     return { content };
   },
   created() {
+    this.forbidden_modal = true
     this.updateState();
   },
   async fetch() {
@@ -67,7 +74,7 @@ export default {
         })
         .then(res => {
           if (res.ret !== 200) {
-            console.error(res.msg);
+            console.error(`${res.ret}: ${res.msg}`);
             return;
           }
           let result = res.data.shift();
@@ -87,7 +94,6 @@ export default {
         prevPageURL: "/wallet",
         totalBalance: this.keyStr("Total Balance")
       });
-      // console.log(this.$store.state);
     },
     keyStr(key) {
       return this.$csvHandler(this.content.body, key);
@@ -95,7 +101,6 @@ export default {
     async onSubmit(event) {
       event.preventDefault();
       if (this.amount <= 0) return;
-      alert("loading");
 
       // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- deposit_index
       // http://showdoc.pubhx.com/index.php?s=/50&page_id=1211
@@ -127,8 +132,12 @@ export default {
             params: { ...deposit_index_params, ...deposit_index_sign }
           })
           .then(res => {
+            if (res.ret === 2206) {
+              this.forbidden_modal = true;
+              return;
+            }
             if (res.ret !== 200) {
-              console.error(res.msg);
+              console.error(`${res.ret}: ${res.msg}`);
               return;
             }
             return res.data;
@@ -182,6 +191,41 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    async userLogout() {
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- members_logout
+      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1196
+      // TODO: GET callbackUrl from app
+      try {
+        let members_logout_params = {
+          s: "members.logout",
+          user: "ucenter",
+          login: this.$auth.$storage.getUniversal("login"),
+          timestamp: Math.floor(Date.now() / 1000),
+          token: this.$auth.$storage.getUniversal("token")
+        };
+
+        let members_logout_sign = await this.$axios.$post(
+          "/lib/sign",
+          members_logout_params
+        );
+        let members_logout = await this.$axios
+          .$get("/api?", {
+            params: { ...members_logout_params, ...members_logout_sign }
+          })
+          .then(res => {
+            if (res.ret !== 200) {
+              console.error(`${res.ret}: ${res.msg}`);
+              return;
+            }
+            return console.warn("Logout:" + res.data);
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 };
@@ -204,6 +248,11 @@ $border-color: #25d6cd54;
   #btn-export {
     @include button-green;
   }
+  // .modal-footer{
+  //   button:nth-child(1){
+  //     @include button-grey;
+  //   }
+  // }
   // hide the arrows of input field
   /* Chrome, Safari, Edge, Opera */
   input::-webkit-outer-spin-button,

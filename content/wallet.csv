@@ -4,7 +4,7 @@ TOTAL BALANCE,Total Balance
 DEPOSIT,Deposit
 WITHDRAWAL,Withdrawal
 PAYMENT HISTORY,Payment History
-ADJUSTMENT, Adjustment
+ ADJUSTMENT, Adjustment
 DEPOSIT AMOUNT,Deposit Amount
 ADDRESS,Address
 EXPORT QR CODE,Export QR code
@@ -19,4 +19,9 @@ BACK TO MY WALLET,Back to my Wallet
 PROCESSING,Processing
 SUCCESS,Success
 FAIL,Fail
-NORECORD, No Records
+NO RECORDS,No Records
+ACTION IS FORBIDDED.,Action is forbidded.
+SUSPICIOUS ACTIVITY HAS BEEN DETECTED.,Suspicious activity has been detected.
+LOGOUT,Logout
+INSUFFICIENT FUND.,Insufficient fund.
+NOT ENOUGH FUND TO WITHDRAW.,Not enough fund to withdraw.
