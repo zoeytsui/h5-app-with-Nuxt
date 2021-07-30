@@ -30,97 +30,95 @@ export default {
     },
     //Getting data from API and content
     async asyncData(context) {
-      try {
-        const content = await context.$content("wallet").fetch()
+        try {
+            const content = await context.$content("wallet").fetch()
 
-        const params = {
-            page: 1,
-            pageSize: 500,
-            user: "ucenter",
-            login: context.$auth.$storage.getUniversal("login"),
-            timestamp: Math.floor(Date.now() / 1000),
-            token: context.$auth.$storage.getUniversal("token"),
+            const params = {
+                page: 1,
+                pageSize: 500,
+                user: "ucenter",
+                login: context.$auth.$storage.getUniversal("login"),
+                timestamp: Math.floor(Date.now() / 1000),
+                token: context.$auth.$storage.getUniversal("token"),
+            }
+
+            // for deposit
+            let depositSign = await context.$axios.$post("/lib/sign", {
+                ...params,
+                s: "deposit.get_list",
+            })
+            let depositList = await context.$axios
+                .$get(`/api/?s=deposit.get_list`, {
+                    params: {
+                        ...params,
+                        ...depositSign,
+                    },
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+
+            //for withdrawal Data
+            let withdrawalSign = await context.$axios.$post("/lib/sign", {
+                ...params,
+                s: "withdraw.get_list",
+            })
+            let withdrawalList = await context.$axios
+                .$get(`/api/?s=withdraw.get_list`, {
+                    params: {
+                        ...params,
+                        ...withdrawalSign,
+                    },
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+
+            //for adjustment Data
+            let adjustmentSign = await context.$axios.$post("/lib/sign", {
+                ...params,
+                s: "bounty.get_list",
+            })
+            let adjustmentList = await context.$axios
+                .$get(`/api/?s=bounty.get_list`, {
+                    params: {
+                        ...params,
+                        ...adjustmentSign,
+                    },
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+
+            if (
+                depositList.ret == "200" &&
+                withdrawalList.ret == "200" &&
+                adjustmentList.ret == "200"
+            ) {
+                context.store.dispatch("history/convertState", {
+                    depositList: depositList.data,
+                    withdrawalList: withdrawalList.data,
+                    adjustmentList: adjustmentList.data,
+                })
+            } else {
+                var errorMsg = [
+                    depositList.msg,
+                    withdrawalList.msg,
+                    adjustmentList.msg,
+                ]
+            }
+
+            return { content, errorMsg }
+        } catch (error) {
+            console.error(error)
         }
-
-        // for deposit
-        let depositSign = await context.$axios.$post("/lib/sign", {
-            ...params,
-            s: "deposit.get_list",
-        })
-        let depositList = await context.$axios
-            .$get(`/api/?s=deposit.get_list`, {
-                params: {
-                    ...params,
-                    ...depositSign,
-                },
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-
-        //for withdrawal Data
-        let withdrawalSign = await context.$axios.$post("/lib/sign", {
-            ...params,
-            s: "withdraw.get_list",
-        })
-        let withdrawalList = await context.$axios
-            .$get(`/api/?s=withdraw.get_list`, {
-                params: {
-                    ...params,
-                    ...withdrawalSign,
-                },
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-
-        //for adjustment Data
-        let adjustmentSign = await context.$axios.$post("/lib/sign", {
-            ...params,
-            s: "bounty.get_list",
-        })
-        let adjustmentList = await context.$axios
-            .$get(`/api/?s=bounty.get_list`, {
-                params: {
-                    ...params,
-                    ...adjustmentSign,
-                },
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-
-        if (
-            depositList.ret == "200" &&
-            withdrawalList.ret == "200" &&
-            adjustmentList.ret == "200"
-        ) {
-            console.log('deposit.get_list', depositList.data.list[0]);
-            console.log('withdraw.get_list', withdrawalList.data.list[0]);
-            context.store.dispatch("history/convertState", {
-                depositList: depositList.data,
-                withdrawalList: withdrawalList.data,
-                adjustmentList: adjustmentList.data,
-            })
-        } else {
-            var errorMsg = [
-                depositList.msg,
-                withdrawalList.msg,
-                adjustmentList.msg,
-            ]
-        }
-
-        return { content, errorMsg }
-      } catch (error) {
-        console.error(error);
-      }
     },
 
     created() {
         this.updateState()
-        this.convertedDeposit = this.convertData(this.depositList)
-        this.convertedWithdraw = this.convertData(this.withdrawalList)
-        this.convertedAdjustment = this.convertData(this.adjustmentList)
+        this.convertedDeposit = this.convertData(this.depositList, true)
+        this.convertedWithdraw = this.convertData(this.withdrawalList, false)
+        this.convertedAdjustment = this.convertData(this.adjustmentList, false)
     },
 
     computed: {
@@ -163,7 +161,7 @@ export default {
         //2. Convert data to 10 records per obj
         //3. grouping data with same date for counting
         //4. Add "," to the amount
-        convertData(data_list) {
+        convertData(data_list, isDeposit) {
             let dataList = []
             let count = 0
             let total = data_list.count
@@ -181,13 +179,18 @@ export default {
                         let amount = new Intl.NumberFormat().format(
                             data_list.list[i].money
                         )
+                        if (isDeposit) {
+                            var status = data_list.list[i].deposit_status
+                        } else {
+                            var status = data_list.list[i].approval_status
+                        }
                         dataList[count - 1]["tenRecords"][
                             data_list.list[i].date
                         ].records.push({
                             time: data_list.list[i].time,
                             order: data_list.list[i].order,
                             amount: amount,
-                            status: data_list.list[i].deposit_status,
+                            status: status,
                             currency: data_list.list[i].currency_name,
                         })
                     } else {
@@ -197,12 +200,17 @@ export default {
                         let amount = new Intl.NumberFormat().format(
                             data_list.list[i].money
                         )
+                        if (isDeposit) {
+                            var status = data_list.list[i].deposit_status
+                        } else {
+                            var status = data_list.list[i].approval_status
+                        }
                         let records = [
                             {
                                 time: data_list.list[i].time,
                                 order: data_list.list[i].order,
                                 amount: amount,
-                                status: data_list.list[i].deposit_status,
+                                status: status,
                                 currency: data_list.list[i].currency_name,
                             },
                         ]
