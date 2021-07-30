@@ -80,7 +80,7 @@ export default {
 
   proxy: {
     '/api': {
-      target: process.env.NODE_ENV === "production" ? 'openapi.9999server.com' : 'http://192.168.75.52:8010',
+      target: process.env.NODE_ENV === "production" ? 'openapi.9999server.com' : process.env.NODE_ENV === "uat" ? 'http://218.253.75.153:8010' : 'http://192.168.75.52:8010',
       pathRewrite: {
         '^/api': '/',
         changeOrigin: true
@@ -91,5 +91,5 @@ export default {
   server: {
     host: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'uat' ? '0.0.0.0' : 'localhost',
     port: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'uat' ? '8001' : '7070'
-  }
+    }
 }

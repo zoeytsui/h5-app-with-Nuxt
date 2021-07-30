@@ -1,15 +1,19 @@
 export default (context, inject) => {
-        // pass csv content key
+    // pass csv content key
         inject(
             'csvHandler', (keyArr, keyStr) => {
-                let lang = context.store.$i18n.defaultLocale.toUpperCase();
-                let ouputString;
-                for (let i in keyArr) {
-                    keyArr[i].KEY === keyStr.toUpperCase()
-                        ? (ouputString = keyArr[i][`${lang}`])
-                        : undefined;
+                try {
+                    let lang = context.store.$i18n.defaultLocale.toUpperCase();
+                    let ouputString;
+                    for (let i in keyArr) {
+                        keyArr[i].KEY === keyStr.toUpperCase()
+                            ? (ouputString = keyArr[i][`${lang}`])
+                            : undefined;
+                    }
+                    return ouputString;
+                } catch (error) {
+                    console.error(error);
                 }
-                return ouputString;
             },
         ),
         // gen api track with date + random string

@@ -30,6 +30,7 @@ export default {
     },
     //Getting data from API and content
     async asyncData(context) {
+      try {
         const content = await context.$content("wallet").fetch()
 
         const params = {
@@ -94,6 +95,8 @@ export default {
             withdrawalList.ret == "200" &&
             adjustmentList.ret == "200"
         ) {
+            console.log('deposit.get_list', depositList.data.list[0]);
+            console.log('withdraw.get_list', withdrawalList.data.list[0]);
             context.store.dispatch("history/convertState", {
                 depositList: depositList.data,
                 withdrawalList: withdrawalList.data,
@@ -108,6 +111,9 @@ export default {
         }
 
         return { content, errorMsg }
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     created() {

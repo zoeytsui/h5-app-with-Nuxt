@@ -1,6 +1,8 @@
 <template>
   <div class="container deposit">
 
+    <object v-if="egPayPage !== null" :data="egPayPage"></object>
+
     <span class="span-box">{{currency_name}}</span>
 
     <hr>
@@ -11,16 +13,25 @@
         <div class="input-group">
           <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" aria-label="Amount (to the nearest dollar)"></b-form-input>
           <span class="input-group-text text-light bg-transparent border-0">{{ deal_type }}</span>
-          <!-- <b-form-invalid-feedback :state="validation">please input number</b-form-invalid-feedback> -->
         </div>
 
         <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('confirm')}}</b-button>
       </b-form>
     </div>
 
-    <b-modal v-model="forbidden_modal" content-class="error-modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
-      <p class="mt-4">{{keyStr('Action is forbidded.')}}</p>
-      <p><small>{{keyStr('Suspicious activity has been detected.')}}</small></p>
+    <b-modal v-model="deposit_completed_modal" id="deposit_completed_modal" content-class="correct-modal" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
+      <p class="my-4">{{keyStr('Deposit Completed')}}</p>
+      <p><small>{{order}}</small></p>
+    </b-modal>
+
+    <b-modal v-model="forbidden_modal" content-class="error_modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
+      <p class="mt-4">{{keyStr('Action is forbidded')}}</p>
+      <p><small>{{keyStr('Suspicious activity has been detected')}}</small></p>
+    </b-modal>
+
+    <b-modal v-model="deposit_fail_modal" content-class="warn_modal" centered hide-header ok-only>
+      <p class="mt-4">{{keyStr('Deposit Fail')}}</p>
+      <p><small>{{keyStr('Please try again later')}}</small></p>
     </b-modal>
 
   </div>
@@ -35,8 +46,14 @@ export default {
       currency_name: null,
       deal_type: null,
       amount: null,
+      order: null,
+      signedText: null,
       reback_sing: null,
-      forbidden_modal: false
+      encryptedText: null,
+      forbidden_modal: false,
+      deposit_fail_modal: false,
+      deposit_completed_modal: false,
+      egPayPage: null
     };
   },
   computed: {
@@ -114,14 +131,13 @@ export default {
           currency_decimal: this.currency_decimal,
           deposit_type: "egpay",
           track: this.$genTrack(),
-          callbackUrl: "wait from app",
+          callbackurl: `${window.location.href}`,
           remark: "",
           user: "ucenter",
           login: this.$auth.$storage.getUniversal("login"),
           timestamp: Math.floor(Date.now() / 1000),
           token: this.$auth.$storage.getUniversal("token")
         };
-
         let deposit_index_sign = await this.$axios.$post(
           "/lib/sign",
           deposit_index_params
@@ -136,57 +152,95 @@ export default {
               return;
             }
             if (res.ret !== 200) {
-              console.error(`${res.ret}: ${res.msg}`);
+              this.fail_modal = true;
               return;
             }
+            this.reback_sing = res.data.reback_sing;
+            this.encryptedText = res.data.form.encryptedText;
+            this.signedText = res.data.form.signedText;
             return res.data;
           })
           .catch(err => {
             console.error(err);
           });
 
-        // console.log(deposit_index);
-
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- EGPay
-        // TODO: GET result from EGPay
-        // let goEGPay = await this.$axios
-        //   .$get(deposit_index.url, deposit_index.form)
-        //   .then(res => res.data);
+        console.log(deposit_index);
+        // this.egPayPage = deposit_index.form;
+        // const axios = require("axios");
+
+        // let data = new FormData();
+        // for (const [key, value] of Object.entries(deposit_index.form)) {
+        //   data.append(key, value)
+        // };
+
+        // let goEGPay = await axios({
+        //   method: "post",
+        //   url: deposit_index.url,
+        //   crossdomain: true,
+        //   data: data
+        // // }).then(res => (this.egPayPage = res.data));
+        // }).then(res => {console.log(res); return res;});
+        // window.location.href = goEGPay.request.responseURL;
+
+        function post(path, params, method = "post") {
+          // The rest of this code assumes you are not using a library.
+          // It can be made less verbose if you use one.
+          const form = document.createElement("form");
+          form.method = method;
+          form.action = path;
+
+          for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+              const hiddenField = document.createElement("input");
+              hiddenField.type = "hidden";
+              hiddenField.name = key;
+              hiddenField.value = params[key];
+
+              form.appendChild(hiddenField);
+            }
+          }
+
+          document.body.appendChild(form);
+          form.submit();
+        }
+
+        // post(deposit_index.url, deposit_index.form);
 
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- deposit_callbackurl
         // http://showdoc.pubhx.com/index.php?s=/50&page_id=1212
         // TODO: update data from EGPay
-        let deposit_callbackurl_params = {
-          s: "deposit.callbackurl",
-          encryptedText: "wait to update",
-          signedText: "wait to update",
-          reback_sing: deposit_index.reback_sing,
-          user: "ucenter",
-          timestamp: Math.floor(Date.now() / 1000),
-          token: this.$auth.$storage.getUniversal("token")
-        };
+        // let deposit_callbackurl_params = {
+        //   s: "deposit.callbackurl",
+        //   encryptedText: "wait to update",
+        //   signedText: "wait to update",
+        //   reback_sing: this.reback_sing,
+        //   user: "ucenter",
+        //   timestamp: Math.floor(Date.now() / 1000),
+        //   token: this.$auth.$storage.getUniversal("token")
+        // };
 
-        let deposit_callbackurl_sign = await this.$axios.$post(
-          "/lib/sign",
-          deposit_callbackurl_params
-        );
+        // let deposit_callbackurl_sign = await this.$axios.$post(
+        //   "/lib/sign",
+        //   deposit_callbackurl_params
+        // );
 
-        // TODO: test again when EGPay network working
-        let deposit_callbackurl = await this.$axios
-          .$get("/api?", {
-            params: {
-              ...deposit_callbackurl_params,
-              ...deposit_callbackurl_sign
-            }
-          })
-          .then(res => {
-            console.log(res);
-            alert(`${this.amount} deposit request send!`);
-            this.$router.push({ path: "/wallet" });
-          })
-          .catch(err => {
-            console.error(err);
-          });
+        // // TODO: test again when EGPay network working
+        // let deposit_callbackurl = await this.$axios
+        //   .$get("/api?", {
+        //     params: {
+        //       ...deposit_callbackurl_params,
+        //       ...deposit_callbackurl_sign
+        //     }
+        //   })
+        //   .then(res => {
+        //     console.log(res);
+        //     // alert(`${this.amount} deposit request send!`);
+        //     // this.$router.push({ path: "/wallet" });
+        //   })
+        //   .catch(err => {
+        //     console.error(err);
+        //   });
       } catch (error) {
         console.error(error);
       }

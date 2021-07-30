@@ -1,7 +1,7 @@
 <template>
     <div :class="selectedBox" class="pb-5">
         <div v-if="selectedData.total == 0" class="text-center">
-            {{keyStr("NO RECORD")}}.
+            {{keyStr("No Records")}}.
         </div>
         <b-container class="records" v-for="i in count" :key="i" v-else>
             <span v-for="(date , j) in Object.keys(selectedData.dataList[i-1].tenRecords)" :key="j">
@@ -13,8 +13,8 @@
                 <span v-for="(record , k) in selectedData.dataList[i-1].tenRecords[date].records" :key="k">
                     <b-row class="py-1">
                         <b-col sm="3" cols="3" v-html="record.time"></b-col>
-                        <b-col sm="4" cols="5" class="text-break" v-html="'#' + record.order"></b-col>
-                        <b-col sm="5" cols="4" class="text-right amount " v-html="'+' + record.amount"></b-col>
+                        <b-col sm="4" cols="5" class="text-break" v-html="record.order"></b-col>
+                        <b-col sm="5" cols="4" class="text-right amount" v-html="record.amount"></b-col>
                     </b-row>
                     <b-row class="py-1">
                         <b-col sm="3" cols="3"></b-col>

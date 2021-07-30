@@ -20,8 +20,12 @@ PROCESSING,Processing
 SUCCESS,Success
 FAIL,Fail
 NO RECORDS,No Records
-ACTION IS FORBIDDED.,Action is forbidded.
-SUSPICIOUS ACTIVITY HAS BEEN DETECTED.,Suspicious activity has been detected.
+ACTION IS FORBIDDED,Action is forbidded.
+SUSPICIOUS ACTIVITY HAS BEEN DETECTED,Suspicious activity has been detected.
 LOGOUT,Logout
-INSUFFICIENT FUND.,Insufficient fund.
-NOT ENOUGH FUND TO WITHDRAW.,Not enough fund to withdraw.
+INSUFFICIENT FUND,Insufficient fund.
+NOT ENOUGH FUND TO WITHDRAW,Not enough fund to withdraw.
+DEPOSIT COMPLETED,Deposit Completed.
+DEPOSIT FAIL,Deposit Fail
+PLEASE TRY AGAIN LATER,Please try again later.
+WITHDRAWAL FAIL,Withdrawal Fail

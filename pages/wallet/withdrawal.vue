@@ -22,6 +22,7 @@
         <p>{{keyStr("Withdrawal Amount")}}</p>
         <div class="input-group">
           <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')"></b-form-input>
+          <!-- <b-form-invalid-feedback :state="validation">please input number</b-form-invalid-feedback> -->
           <div class="input-group-append">
             <span class="input-group-text text-light bg-transparent border-0">{{deal_type}}</span>
           </div>
@@ -53,19 +54,25 @@
       <b-button type="submit" id="btn-export" :disabled="isDisabled" class="btn my-3 w-100 text-light">{{keyStr('Withdrawal')}}</b-button>
     </b-form>
 
-    <b-modal v-model="withdrawal_modal" id="withdrawal-completed-modal" content-class="correct-modal" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
+    <b-modal v-model="withdrawal_completed_modal" id="withdrawal_completed_modal" content-class="correct_modal" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
       <p class="my-4">{{keyStr('Withdrawal Completed')}}</p>
-      <p>{{order}}</p>
+      <p><small>{{order}}</small></p>
     </b-modal>
 
-    <b-modal v-model="forbidden_modal" content-class="error-modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
-      <p class="mt-4">{{keyStr('Action is forbidded.')}}</p>
-      <p><small>{{keyStr('Suspicious activity has been detected.')}}</small></p>
+    <b-modal v-model="withdrawal_fail_modal" if="withdrawal_fail_modal" content-class="error_modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
+      <p class="mt-4">{{keyStr('Withdrawal Fail')}}</p>
+      <p><small>{{keyStr('Please try again later')}}</small></p>
     </b-modal>
 
-    <b-modal v-model="insufficient_modal" content-class="warn-modal" centered hide-header ok-only>
-      <p class="mt-4">{{keyStr('Insufficient fund.')}}</p>
-      <p><small>{{keyStr('Not enough fund to withdraw.')}}</small></p>
+    <b-modal v-model="forbidden_modal" content-class="error_modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
+      <p class="mt-4">{{keyStr('Action is forbidded')}}</p>
+      <p><small>{{keyStr('Suspicious activity has been detected')}}</small></p>
+    </b-modal>
+
+
+    <b-modal v-model="insufficient_modal" content-class="warn_modal" centered hide-header ok-only>
+      <p class="mt-4">{{keyStr('Insufficient fund')}}</p>
+      <p><small>{{keyStr('Not enough fund to withdraw')}}</small></p>
     </b-modal>
 
   </div>
@@ -84,9 +91,10 @@ export default {
       address: null,
       QRCodePic: null,
       order: null,
-      withdrawal_modal: false,
       forbidden_modal: false,
-      insufficient_modal: false
+      insufficient_modal: false,
+      withdrawal_fail_modal: false,
+      withdrawal_completed_modal: false,
     };
   },
   watch: {
@@ -210,7 +218,7 @@ export default {
         .$get("/api?", {
           params: { ...withdraw_index_params, ...withdraw_index_sign }
         })
-        .then(res => {
+        .then(async res => {
           if (res.ret === 400) {
             this.insufficient_modal = true;
             return;
@@ -220,10 +228,11 @@ export default {
             return;
           }
           if (res.ret !== 200) {
-            console.error(`${res.ret}: ${res.msg}`);
+            this.withdrawal_fail_modal = true;
             return;
           }
-          this.order = res.data.order;
+          await (this.order = res.data.order);
+          // this.withdrawal_completed_modal = true;
           window.location.href = "x60://check_fund_password_page";
         });
     },
