@@ -59,7 +59,7 @@
       <p><small>{{order}}</small></p>
     </b-modal>
 
-    <b-modal v-model="withdrawal_fail_modal" if="withdrawal_fail_modal" content-class="error_modal" :ok-title="keyStr('Logout')" @ok="userLogout" centered hide-header>
+    <b-modal v-model="withdrawal_fail_modal" id="withdrawal_fail_modal" content-class="error_modal" centered hide-header ok-only>
       <p class="mt-4">{{keyStr('Withdrawal Fail')}}</p>
       <p><small>{{keyStr('Please try again later')}}</small></p>
     </b-modal>
@@ -68,7 +68,6 @@
       <p class="mt-4">{{keyStr('Action is forbidded')}}</p>
       <p><small>{{keyStr('Suspicious activity has been detected')}}</small></p>
     </b-modal>
-
 
     <b-modal v-model="insufficient_modal" content-class="warn_modal" centered hide-header ok-only>
       <p class="mt-4">{{keyStr('Insufficient fund')}}</p>
@@ -87,6 +86,7 @@ export default {
       currency_name: null,
       deal_type: null,
       fee: null,
+      w_type: null,
       amount: null,
       address: null,
       QRCodePic: null,
@@ -94,7 +94,7 @@ export default {
       forbidden_modal: false,
       insufficient_modal: false,
       withdrawal_fail_modal: false,
-      withdrawal_completed_modal: false,
+      withdrawal_completed_modal: false
     };
   },
   watch: {
@@ -113,7 +113,9 @@ export default {
     transactionFee() {
       // factor of ten, round to 3 decimal places
       const fac = Math.pow(10, 3);
-      return Math.floor(this.amount * `${this.fee / 100}` * fac) / fac;
+      return this.w_type === "percentage"
+        ? Math.floor(this.amount * `${this.fee / 100}` * fac) / fac
+        : this.fee;
     },
     actualWithdrawal() {
       // factor of ten, round to 3 decimal places
@@ -168,6 +170,7 @@ export default {
           }
           let result = res.data.shift();
           this.fee = result.fee;
+          this.w_type = result.w_type;
           this.deal_type = result.deal_type;
           this.currency_name = result.name;
           this.currency_decimal = result.decimal;
@@ -199,7 +202,7 @@ export default {
         currency_name: this.currency_name,
         currency_decimal: this.currency_decimal,
         track: this.$genTrack(),
-        fee: this.fee,
+        fee: this.transactionFee,
         miner_fee: "",
         remark: "",
         user: "ucenter",

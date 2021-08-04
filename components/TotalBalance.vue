@@ -21,35 +21,38 @@ export default {
     }
   },
   created() {
-    this.getQueryStr();
+    setTimeout(() => {
+      this.getQueryStr();
+    }, 100);
   },
   methods: {
     async getQueryStr() {
       let queryStr = this.$nuxt.context.query;
+      if (process.client) {
+        switch (true) {
+          // senario 1: query string exsited
+          case Boolean(queryStr.token):
+            this.$auth.$storage.setUniversal("token", queryStr.token);
 
-      switch (true) {
-        // senario 1: query string exsited
-        case Boolean(queryStr.token):
-          this.$auth.$storage.setUniversal("token", queryStr.token);
+          case Boolean(queryStr.login):
+            this.$auth.$storage.setUniversal("login", queryStr.login);
+            break;
 
-        case Boolean(queryStr.login):
-          this.$auth.$storage.setUniversal("login", queryStr.login);
-          break;
+          // senario 2: query string not exsited
+          case !queryStr.token:
+            this.$auth.$storage.getUniversal("token") !== undefined
+              ? (this.token = this.$auth.$storage.getUniversal("token"))
+              : console.error("token - Query String required");
 
-        // senario 2: query string not exsited
-        case !queryStr.token:
-          this.$auth.$storage.getUniversal("token") !== undefined
-            ? (this.token = this.$auth.$storage.getUniversal("token"))
-            : console.error("token - Query String required");
-
-        case !queryStr.login:
-          this.$auth.$storage.getUniversal("login") !== undefined
-            ? (this.login = this.$auth.$storage.getUniversal("login"))
-            : console.error("login - Query String required");
-          break;
+          case !queryStr.login:
+            this.$auth.$storage.getUniversal("login") !== undefined
+              ? (this.login = this.$auth.$storage.getUniversal("login"))
+              : console.error("login - Query String required");
+            break;
+        }
       }
       this.$store.dispatch("wallet/getUserInfo");
-    },
+    }
   }
 };
 </script>
