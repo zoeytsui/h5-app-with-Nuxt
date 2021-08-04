@@ -22,7 +22,7 @@ FAIL,Fail
 NEW,Processing
 Y,Success
 N,Fail
-NO RECORDS,No Records
+NO RECORDS,No Record
 ACTION IS FORBIDDED,Action is forbidded.
 SUSPICIOUS ACTIVITY HAS BEEN DETECTED,Suspicious activity has been detected.
 LOGOUT,Logout

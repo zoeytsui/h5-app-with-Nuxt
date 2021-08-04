@@ -1,25 +1,25 @@
 <template>
     <div :class="selectedBox" class="pb-5">
-        <div v-if="selectedData.total == 0" class="text-center">
-            {{keyStr("No Records")}}.
+        <div v-if="selectedData.total == 0" class="text-center py-3">
+            {{keyStr("No Records")}}
         </div>
         <b-container class="records" v-for="i in count" :key="i" v-else>
             <span v-for="(date , j) in Object.keys(selectedData.dataList[i-1].tenRecords)" :key="j">
                 <b-row class="records-header py-1">
                     <b-col sm="3" cols="3" class="pr-0" v-html="selectedData.dataList[i-1].tenRecords[date].date"></b-col>
-                    <b-col sm="4" cols="6" v-html="selectedData.dataList[i-1].tenRecords[date].records.length + ' Records'"></b-col>
+                    <b-col sm="4" cols="6" v-html="checkLength(selectedData.dataList[i-1].tenRecords[date].records.length)"></b-col>
                     <b-col sm="5" cols="3"></b-col>
                 </b-row>
                 <span v-for="(record , k) in selectedData.dataList[i-1].tenRecords[date].records" :key="k">
                     <b-row class="py-1">
                         <b-col sm="3" cols="3" v-html="record.time"></b-col>
-                        <b-col sm="4" cols="5" class="text-break" v-html="record.order"></b-col>
-                        <b-col sm="5" cols="4" class="text-right amount" v-html="record.amount"></b-col>
+                        <b-col  cols="5" class="text-break" v-html="record.order"></b-col>
+                        <b-col  cols="4" class="text-right" :class="[record.amount>0?'green':'red']" v-html="record.amount"></b-col>
                     </b-row>
                     <b-row class="py-1">
                         <b-col sm="3" cols="3"></b-col>
-                        <b-col sm="4" cols="5">{{keyStr(record.status)}}</b-col>
-                        <b-col sm="5" cols="4" class="text-right" v-html="record.currency"></b-col>
+                        <b-col  cols="5">{{keyStr(record.status)}}</b-col>
+                        <b-col  cols="4" class="text-right" v-html="record.currency"></b-col>
                     </b-row>
                 </span>
             </span>
@@ -68,6 +68,9 @@ export default {
                 }
             } else return
         },
+        checkLength(data) {
+            return data > 1 ? `${data} Records` : `${data} Record`
+        },
     },
     mounted() {
         // scroll down to load more data
@@ -108,23 +111,20 @@ export default {
         white-space: nowrap;
     }
 }
-.deposit {
-    .amount {
-        color: #60bc3f;
-    }
+
+.green {
+    color: #60bc3f;
 }
-.withdrawal,
-.adjustment {
-    .amount {
-        color: #db3e62;
-    }
+
+.red {
+    color: #db3e62;
 }
 
 @media (max-width: 576px) {
     .records {
-        .row{
-            div{
-                padding-left:5px;
+        .row {
+            div {
+                padding-left: 5px;
             }
         }
         span span .row {

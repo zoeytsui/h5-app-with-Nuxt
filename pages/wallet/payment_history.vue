@@ -1,10 +1,13 @@
 <template>
     <div class="container payment-history">
 
-        <section class="options py-2 ">
-            <span class="span-box mr-1" @click='selectBox("deposit")' :class="{active:selected=='deposit'}">{{keyStr('deposit')}}</span>
-            <span class="span-box mx-1" @click='selectBox("withdrawal")' :class="{active:selected=='withdrawal'}">{{keyStr('withdrawal')}}</span>
-            <span class="span-box mx-1" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span>
+        <section class="options py-2 text-center container">
+            <div class="row">
+                <div class="col p-0"><span class="span-box" @click='selectBox("deposit")' :class="{active:selected=='deposit'}">{{keyStr('deposit')}}</span></div>
+                <div class="col p-0"><span class="span-box" @click='selectBox("withdrawal")' :class="{active:selected=='withdrawal'}">{{keyStr('withdrawal')}}</span></div>
+                <div class="col p-0"><span class="span-box" @click='selectBox("adjustment")' :class="{active:selected=='adjustment'}">{{keyStr('Adjustment')}}</span></div>
+            </div>
+
         </section>
 
         <div v-if="errorMsg" class="text-center">
@@ -226,18 +229,18 @@ export default {
         convertDateFormat(mydate) {
             let date = new Date(mydate)
             let month = [
-                "January",
-                "February",
-                "March",
-                "April",
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
                 "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
             ][date.getMonth()]
             return date.getDate() + " " + month
         },
