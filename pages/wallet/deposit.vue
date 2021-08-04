@@ -47,8 +47,8 @@ export default {
       deal_type: null,
       amount: null,
       order: null,
+      track: null,
       signedText: null,
-      reback_sing: null,
       encryptedText: null,
       forbidden_modal: false,
       deposit_fail_modal: false,
@@ -67,6 +67,11 @@ export default {
   },
   created() {
     this.updateState();
+    
+    // this.updateCallbackurl();
+    // if (this.$nuxt.context.query.reback_sing) {
+    // this.updateCallbackurl();
+    // }
   },
   async fetch() {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
@@ -122,6 +127,8 @@ export default {
       // http://showdoc.pubhx.com/index.php?s=/50&page_id=1211
       // TODO: GET callbackUrl from app
       try {
+        this.track = this.$genTrack();
+        this.$auth.$storage.setUniversal("track", this.track);
         let deposit_index_params = {
           s: "deposit.index",
           amount: this.amount,
@@ -130,8 +137,9 @@ export default {
           currency_name: this.currency_name,
           currency_decimal: this.currency_decimal,
           deposit_type: "egpay",
-          track: this.$genTrack(),
-          callbackurl: `${window.location.href}`,
+          track: this.$auth.$storage.getUniversal("track"),
+          callbackurl: `${window.location.origin}/lib/deposit?`,
+          // callbackurl: `${window.location.href}?`,
           remark: "",
           user: "ucenter",
           login: this.$auth.$storage.getUniversal("login"),
@@ -152,40 +160,24 @@ export default {
               return;
             }
             if (res.ret !== 200) {
-              this.fail_modal = true;
+              this.deposit_fail_modal = true;
+              console.error(`${res.ret}: ${res.msg}`);
               return;
             }
-            this.reback_sing = res.data.reback_sing;
-            this.encryptedText = res.data.form.encryptedText;
-            this.signedText = res.data.form.signedText;
+            this.$auth.$storage.setUniversal("reback_sing",res.data.reback_sing);
+            this.$auth.$storage.setUniversal("order", res.data.order);
+            this.$auth.$storage.setUniversal("encryptedText",res.data.form.encryptedText);
+            this.$auth.$storage.setUniversal("signedText",res.data.form.signedText);
             return res.data;
           })
           .catch(err => {
             console.error(err);
           });
+        console.log("deposit_index_params", deposit_index_params);
+        console.log("deposit_index", deposit_index);
 
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- EGPay
-        console.log(deposit_index);
-        // this.egPayPage = deposit_index.form;
-        // const axios = require("axios");
-
-        // let data = new FormData();
-        // for (const [key, value] of Object.entries(deposit_index.form)) {
-        //   data.append(key, value)
-        // };
-
-        // let goEGPay = await axios({
-        //   method: "post",
-        //   url: deposit_index.url,
-        //   crossdomain: true,
-        //   data: data
-        // // }).then(res => (this.egPayPage = res.data));
-        // }).then(res => {console.log(res); return res;});
-        // window.location.href = goEGPay.request.responseURL;
-
-        function post(path, params, method = "post") {
-          // The rest of this code assumes you are not using a library.
-          // It can be made less verbose if you use one.
+        function postForm(path, params, method = "post") {
           const form = document.createElement("form");
           form.method = method;
           form.action = path;
@@ -204,43 +196,77 @@ export default {
           document.body.appendChild(form);
           form.submit();
         }
+        postForm(deposit_index.url, deposit_index.form);
 
-        // post(deposit_index.url, deposit_index.form);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async updateCallbackurl() {
+      try {
+        await this.$axios.$post('/lib/deposit/data').then(res=>{
+          console.log('res', res);
+        })
+        // if (process.client) {
 
-        // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- deposit_callbackurl
-        // http://showdoc.pubhx.com/index.php?s=/50&page_id=1212
-        // TODO: update data from EGPay
-        // let deposit_callbackurl_params = {
-        //   s: "deposit.callbackurl",
-        //   encryptedText: "wait to update",
-        //   signedText: "wait to update",
-        //   reback_sing: this.reback_sing,
-        //   user: "ucenter",
-        //   timestamp: Math.floor(Date.now() / 1000),
-        //   token: this.$auth.$storage.getUniversal("token")
-        // };
+          // const axios = require("axios");
 
-        // let deposit_callbackurl_sign = await this.$axios.$post(
-        //   "/lib/sign",
-        //   deposit_callbackurl_params
-        // );
+          // let data = new FormData();
+          // for (const [key, value] of Object.entries(deposit_index.form)) {
+          //   data.append(key, value);
+          // }
 
-        // // TODO: test again when EGPay network working
-        // let deposit_callbackurl = await this.$axios
-        //   .$get("/api?", {
-        //     params: {
-        //       ...deposit_callbackurl_params,
-        //       ...deposit_callbackurl_sign
-        //     }
-        //   })
-        //   .then(res => {
-        //     console.log(res);
-        //     // alert(`${this.amount} deposit request send!`);
-        //     // this.$router.push({ path: "/wallet" });
-        //   })
-        //   .catch(err => {
-        //     console.error(err);
-        //   });
+          // let goEGPay = await axios({
+          //   method: "post",
+          //   url: deposit_index.url,
+          //   crossdomain: true,
+          //   data: data
+          //   // }).then(res => (this.egPayPage = res.data));
+          // }).then(res => {
+          //   console.log(res);
+          //   return res;
+          // });
+          // window.location.href = goEGPay.request.responseURL;
+
+          // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- deposit_callbackurl
+          // http://showdoc.pubhx.com/index.php?s=/50&page_id=1212
+          // TODO: update data from EGPay
+          // let deposit_callbackurl_params = {
+          //   s: "deposit.callbackurl",
+          //   encryptedText: this.$auth.$storage.getUniversal("encryptedText"),
+          //   signedText: this.$auth.$storage.getUniversal("signedText"),
+          //   reback_sing: this.$auth.$storage.getUniversal("reback_sing"),
+          //   user: "ucenter",
+          //   timestamp: Math.floor(Date.now() / 1000),
+          //   token: this.$auth.$storage.getUniversal("token")
+          // };
+          // console.log("deposit_callbackurl_params", deposit_callbackurl_params);
+          // let deposit_callbackurl_sign = await this.$axios.$post(
+          //   "/lib/sign",
+          //   deposit_callbackurl_params
+          // );
+
+          // // TODO: test again when EGPay network working
+          // let deposit_callbackurl = await this.$axios
+          //   .$get("/api?", {
+          //     params: {
+          //       ...deposit_callbackurl_params,
+          //       ...deposit_callbackurl_sign
+          //     }
+          //   })
+          //   .then(res => {
+          //     console.log("callback", res);
+          //     if (res.ret !== 200) {
+          //       this.deposit_fail_modal = true;
+          //       console.error(`${res.ret}: ${res.msg}`);
+          //       return;
+          //     }
+          //     this.deposit_completed_modal = true;
+          //   })
+          //   .catch(err => {
+          //     console.error(err);
+          //   });
+        // }
       } catch (error) {
         console.error(error);
       }
