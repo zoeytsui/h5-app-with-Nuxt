@@ -66,7 +66,6 @@ export default {
   h1 {
     color: #2beae2;
     font-weight: 600;
-    font-family: Helvetica;
   }
 }
 </style>

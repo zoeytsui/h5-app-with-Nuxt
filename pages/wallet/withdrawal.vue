@@ -1,7 +1,7 @@
 <template>
-  <div class="container withdrawal">
+  <section class="container withdrawal">
 
-    <span class="span-box">{{currency_name}}</span>
+    <span class="span-box">{{get_deal_type.name}}</span>
 
     <hr>
 
@@ -24,7 +24,7 @@
           <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')"></b-form-input>
           <!-- <b-form-invalid-feedback :state="validation">please input number</b-form-invalid-feedback> -->
           <div class="input-group-append">
-            <span class="input-group-text text-light bg-transparent border-0">{{deal_type}}</span>
+            <span class="input-group-text text-light bg-transparent border-0">{{get_deal_type.deal_type}}</span>
           </div>
         </div>
       </div>
@@ -35,7 +35,7 @@
         <p>{{keyStr("Transaction fee")}}</p>
         <p>
           <span>{{transactionFee}}</span>
-          <span>{{deal_type}}</span>
+          <span>{{get_deal_type.deal_type}}</span>
         </p>
       </div>
 
@@ -45,7 +45,7 @@
         <p>{{keyStr("Actual withdrawal")}}</p>
         <h4>
           <span>{{actualWithdrawal}}</span>
-          <span>{{deal_type}}</span>
+          <span>{{get_deal_type.deal_type}}</span>
         </h4>
       </div>
 
@@ -56,7 +56,7 @@
 
     <b-modal v-model="withdrawal_completed_modal" id="withdrawal_completed_modal" content-class="correct_modal" :ok-title="keyStr('Back to my Wallet')" @ok="$router.push({ path: '/wallet' })" centered hide-header ok-only>
       <p class="my-4">{{keyStr('Withdrawal Completed')}}</p>
-      <p><small>{{order}}</small></p>
+      <p><small>{{$auth.$storage.getUniversal("order")}}</small></p>
     </b-modal>
 
     <b-modal v-model="withdrawal_fail_modal" id="withdrawal_fail_modal" content-class="error_modal" centered hide-header ok-only>
@@ -74,7 +74,7 @@
       <p><small>{{keyStr('Not enough fund to withdraw')}}</small></p>
     </b-modal>
 
-  </div>
+  </section>
 </template>
 
 <script>
@@ -82,15 +82,9 @@ export default {
   layout: "wallet",
   data() {
     return {
-      currency_decimal: null,
-      currency_name: null,
-      deal_type: null,
-      fee: null,
-      w_type: null,
       amount: null,
       address: null,
       QRCodePic: null,
-      order: null,
       forbidden_modal: false,
       insufficient_modal: false,
       withdrawal_fail_modal: false,
@@ -101,9 +95,7 @@ export default {
     QRCodePic() {
       try {
         const html5Qrcode = new Html5Qrcode("reader");
-        html5Qrcode.scanFile(this.QRCodePic, false).then(decodedText => {
-          this.address = decodedText;
-        });
+        html5Qrcode.scanFile(this.QRCodePic, false).then(decodedText => this.address = decodedText);
       } catch (error) {
         console.error(error);
       }
@@ -111,73 +103,55 @@ export default {
   },
   computed: {
     transactionFee() {
+      if (this.amount <= 0) return 0;
       // factor of ten, round to 3 decimal places
       const fac = Math.pow(10, 3);
-      return this.w_type === "percentage"
-        ? Math.floor(this.amount * `${this.fee / 100}` * fac) / fac
-        : this.fee;
+      return this.get_deal_type.w_type === "percentage"
+        ? Math.floor(this.amount * `${this.get_deal_type.fee / 100}` * fac) / fac
+        : this.get_deal_type.fee;
     },
     actualWithdrawal() {
+      if (this.amount <= 0) return 0;
       // factor of ten, round to 3 decimal places
       const fac = Math.pow(10, 3);
       return Math.floor((this.amount - this.transactionFee) * fac) / fac;
     },
     isDisabled() {
-      return this.amount !== null ? false : true;
-    },
-    isSetFundPass() {
-      return this.$store.state.wallet.userInfo.isSetFundPass;
+      return this.amount !== null && this.amount >= 0 ? false : true;
     }
   },
   async asyncData(context) {
-    const content = await context.$content("wallet").fetch();
-    return { content };
-  },
-  created() {
-    // if not set fund password go back to app
-    setTimeout(() => {
-      if (process.client && !this.isSetFundPass) {
-        window.location.href = "x60://set_fund_password_page";
-      }
-    }, 500);
-    this.updateState();
-  },
-  async fetch() {
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
-    // http://showdoc.pubhx.com/index.php?s=/50&page_id=1216
     try {
+      const content = await context.$content("wallet").fetch();
+
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
+      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1216
       let get_deal_type_params = {
         s: "withdraw.get_deal_type",
         user: "ucenter",
-        login: this.$auth.$storage.getUniversal("login"),
+        login: context.$auth.$storage.getUniversal("login"),
         timestamp: Math.floor(Date.now() / 1000),
-        token: this.$auth.$storage.getUniversal("token")
+        token: context.$auth.$storage.getUniversal("token")
       };
 
-      let get_deal_type_sign = await this.$axios.$post(
-        "/lib/sign",
-        get_deal_type_params
-      );
+      let get_deal_type_sign = await context.$axios.$post("/lib/sign", get_deal_type_params);
 
-      let get_deal_type = await this.$axios
-        .$get("/api?", {
-          params: { ...get_deal_type_params, ...get_deal_type_sign }
-        })
+      let get_deal_type = await context.$axios
+        .$get("/api?", { params: { ...get_deal_type_params, ...get_deal_type_sign } })
         .then(res => {
-          if (res.ret !== 200) {
-            console.error(`${res.ret}: ${res.msg}`);
-            return;
-          }
+          if (res.ret !== 200) console.error(`${res.ret}: ${res.msg}`);
           let result = res.data.shift();
-          this.fee = result.fee;
-          this.w_type = result.w_type;
-          this.deal_type = result.deal_type;
-          this.currency_name = result.name;
-          this.currency_decimal = result.decimal;
-        });
+          return result;
+        }).catch(err => console.error(err));
+
+      return { content, get_deal_type };
+
     } catch (error) {
       console.error(error);
     }
+  },
+  created() {
+    this.updateState();
   },
   methods: {
     updateState() {
@@ -192,86 +166,47 @@ export default {
     },
     async onSubmit(event) {
       event.preventDefault();
+      if (this.amount <= 0) return;
 
-      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- withdraw_index
-      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1217
-      let withdraw_index_params = {
-        s: "withdraw.index",
-        amount: this.amount,
-        deal_type: this.deal_type,
-        currency_name: this.currency_name,
-        currency_decimal: this.currency_decimal,
-        track: this.$genTrack(),
-        fee: this.transactionFee,
-        miner_fee: "",
-        remark: "",
-        user: "ucenter",
-        login: this.$auth.$storage.getUniversal("login"),
-        timestamp: Math.floor(Date.now() / 1000),
-        token: this.$auth.$storage.getUniversal("token")
-      };
-
-      let withdraw_index_sign = await this.$axios.$post(
-        "/lib/sign",
-        withdraw_index_params
-      );
-
-      //TODO: test when balance enough
-      let withdraw_index = await this.$axios
-        .$get("/api?", {
-          params: { ...withdraw_index_params, ...withdraw_index_sign }
-        })
-        .then(async res => {
-          if (res.ret === 400) {
-            this.insufficient_modal = true;
-            return;
-          }
-          if (res.ret === 2206) {
-            this.forbidden_modal = true;
-            return;
-          }
-          if (res.ret !== 200) {
-            this.withdrawal_fail_modal = true;
-            return;
-          }
-          await (this.order = res.data.order);
-          // this.withdrawal_completed_modal = true;
-          window.location.href = "x60://check_fund_password_page";
-        });
-    },
-    async userLogout() {
-      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- members_logout
-      // http://showdoc.pubhx.com/index.php?s=/50&page_id=1196
       try {
-        let members_logout_params = {
-          s: "members.logout",
+        // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- withdraw_index
+        // http://showdoc.pubhx.com/index.php?s=/50&page_id=1217
+        let withdraw_index_params = {
+          s: "withdraw.index",
+          amount: this.amount,
+          deal_type: this.get_deal_type.deal_type,
+          currency_name: this.get_deal_type.name,
+          currency_decimal: this.get_deal_type.decimal,
+          track: this.$genTrack(),
+          fee: this.transactionFee,
+          miner_fee: "",
+          remark: "",
           user: "ucenter",
           login: this.$auth.$storage.getUniversal("login"),
           timestamp: Math.floor(Date.now() / 1000),
           token: this.$auth.$storage.getUniversal("token")
         };
 
-        let members_logout_sign = await this.$axios.$post(
-          "/lib/sign",
-          members_logout_params
-        );
-        let members_logout = await this.$axios
-          .$get("/api?", {
-            params: { ...members_logout_params, ...members_logout_sign }
-          })
-          .then(res => {
-            if (res.ret !== 200) {
-              console.error(`${res.ret}: ${res.msg}`);
-              return;
-            }
-            return console.warn("Logout:" + res.data);
-          })
-          .catch(err => {
-            console.error(err);
+        let withdraw_index_sign = await this.$axios.$post("/lib/sign", withdraw_index_params);
+
+        let withdraw_index = await this.$axios
+          .$get("/api?", { params: { ...withdraw_index_params, ...withdraw_index_sign } })
+          .then(async res => {
+            console.log(res);
+            if (res.ret === 400) this.insufficient_modal = true;
+            if (res.ret === 2206) this.forbidden_modal = true;
+            if (res.ret !== 200) this.withdrawal_fail_modal = true;
+
+            this.$auth.$storage.setUniversal("order", res.data.order);
+            // this.withdrawal_completed_modal = true;
+            window.location.href = "x60://check_fund_password_page";
           });
       } catch (error) {
         console.error(error);
       }
+    },
+    async userLogout() {
+      this.$store.dispatch("wallet/userLogout");
     }
   }
 };

@@ -1,5 +1,5 @@
 export default (context, inject) => {
-    // pass csv content key
+        // pass csv content key
         inject(
             'csvHandler', (keyArr, keyStr) => {
                 try {
@@ -20,7 +20,7 @@ export default (context, inject) => {
         inject(
             'genTrack', () => {
                 let id = [
-                    new Date().getFullYear(),
+                    new Date().getYear(),
                     new Date().getMonth() + 1,
                     new Date().getDate(),
                     new Date().getHours(),

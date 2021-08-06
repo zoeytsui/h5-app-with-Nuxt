@@ -1,6 +1,5 @@
-$border-color: #285b65;
 @mixin button-green {
-    color: #1b2831;
+    color: #ffffff;
     background: linear-gradient(180deg, rgba(43, 234, 226, 1) 0%, rgba(43, 234, 226, 1) 15%, rgb(21, 112, 108) 100%);
 }
 @mixin button-grey {
@@ -8,17 +7,27 @@ $border-color: #285b65;
     background: transparent linear-gradient(0deg, #324755 0%, #b5b5b5 100%) 0% 0% no-repeat padding-box;
 }
 
-.correct_modal{
+.correct_modal {
     background: url("~/assets/wallet/correct_modal.png") no-repeat;
     background-size: cover;
 }
 
-.error_modal{
+.error_modal {
     background: url("~/assets/wallet/error_modal.png") no-repeat;
     background-size: cover;
 }
 
-.warn_modal{
+.warn_modal {
     background: url("~/assets/wallet/warn_modal.png") no-repeat;
     background-size: cover;
+}
+
+$border-color: #285b65;
+
+.title_color {
+    color: #324755;
+}
+
+.content_color {
+    color: #686868;
 }

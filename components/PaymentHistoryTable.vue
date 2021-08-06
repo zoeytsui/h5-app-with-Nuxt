@@ -14,7 +14,7 @@
                     <b-row class="py-1">
                         <b-col sm="3" cols="3" v-html="record.time"></b-col>
                         <b-col  cols="5" class="text-break" v-html="record.order"></b-col>
-                        <b-col  cols="4" class="text-right" :class="[record.amount>0?'green':'red']" v-html="record.amount"></b-col>
+                        <b-col  cols="4" class="text-right" :class="[parseInt(record.amount) > 0?'green':'red']" v-html="record.amount"></b-col>
                     </b-row>
                     <b-row class="py-1">
                         <b-col sm="3" cols="3"></b-col>

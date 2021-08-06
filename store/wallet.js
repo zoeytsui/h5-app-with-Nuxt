@@ -21,7 +21,7 @@ export const mutations = {
 }
 
 export const actions = {
-    async getUserInfo({ commit }) {
+    async getUserInfo({ state, commit }) {
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- getUserInfo
         // http://showdoc.pubhx.com/index.php?s=/50&page_id=1302
         try {
@@ -35,31 +35,44 @@ export const actions = {
                 user: "ucenter"
             };
 
-            let getUserInfo_sign = await this.$axios.$post(
-                "/lib/sign",
-                getUserInfo_params
-            );
+            let getUserInfo_sign = await this.$axios.$post("/lib/sign", getUserInfo_params);
 
             let getUserInfoApi = await this.$axios
-                .$get("/api", {
-                    params: { ...getUserInfo_params, ...getUserInfo_sign }
-                })
-                .then(res => {
-                    if (res.ret !== 200) {
-                        console.error(`${res.ret}: ${res.msg}`);
-                        return;
-                    }
+                .$get("/api", { params: { ...getUserInfo_params, ...getUserInfo_sign } }).then(res => {
+                    if (res.ret !== 200) { console.error(`${res.ret}: ${res.msg}`); return; }
                     userInfo.isSetFundPass = res.data.isSetFundPass;
                     userInfo.balance = Object.values(res.data.balance)[0];
                     userInfo.currency = Object.keys(res.data.balance)[0];
                     commit('updateUserInfo', userInfo);
-                })
-                .catch(err => {
-                    console.error(err);
-                });
+                }).catch(err => console.error(err));
 
         } catch (error) {
             console.error(error);
         }
-    }
+    },
+
+    async userLogout() {
+        // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- members_logout
+        // http://showdoc.pubhx.com/index.php?s=/50&page_id=1196
+        try {
+            let members_logout_params = {
+                s: "members.logout",
+                user: "ucenter",
+                login: this.$auth.$storage.getUniversal("login"),
+                timestamp: Math.floor(Date.now() / 1000),
+                token: this.$auth.$storage.getUniversal("token")
+            };
+
+            let members_logout_sign = await this.$axios.$post("/lib/sign", members_logout_params);
+
+            let members_logout = await this.$axios
+                .$get("/api?", { params: { ...members_logout_params, ...members_logout_sign } }).then(res => {
+                    if (res.ret !== 200) console.error(`${res.ret}: ${res.msg}`)
+                    return console.warn("Logout:" + res.data);
+                }).catch(err => console.error(err));
+
+        } catch (error) {
+            console.error(error);
+        }
+    },
 }

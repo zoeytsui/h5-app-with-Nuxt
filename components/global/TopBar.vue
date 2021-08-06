@@ -1,14 +1,8 @@
 <template>
   <div class="container-fluid">
-    <nav class="navbar navbar-dark container-fluid">
-      <a class="navbar-brand" v-if="isApp" :href="appPage">
-        <img src="~assets/Arrow_l_blue.png" alt="">
-        {{currentPage}}
-      </a>
-      <n-link class="navbar-brand" v-else :to="prevPageURL">
-        <img src="~assets/Arrow_l_blue.png" alt="">
-        {{currentPage}}
-      </n-link>
+    <nav class="navbar navbar-dark container-fluid" @click="switchPage">
+      <img src="~assets/Arrow_l_blue.png" alt="">
+      {{currentPage}}
     </nav>
     <hr>
   </div>
@@ -20,16 +14,12 @@ export default {
     currentPage: String,
     prevPageURL: String
   },
-  data() {
-    return {
-      isApp: false,
-      appPage: null
-    };
-  },
-  created() {
-    if (this.$route.path === "/wallet" || this.$route.path === "/help-and-support") {
-      this.isApp = true;
-      this.appPage = "x60://back_to_page";
+  methods: {
+    switchPage() {
+      if (this.$route.path === "/wallet" || this.$route.path === "/help-and-support") {
+        return window.location.href = "x60://back_to_page";
+      }
+      return this.$router.push({ path: `${this.prevPageURL}` });
     }
   }
 };
@@ -37,16 +27,16 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  .navbar-brand {
-    font-size: 1rem;
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    img {
-      width: 21px;
-      height: 17px;
-      margin-right: 0.4rem;
-    }
+  color: white;
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-start;
+  flex-flow: row nowrap;
+  align-items: center;
+  img {
+    width: 21px;
+    height: 17px;
+    margin-right: 0.4rem;
   }
 }
 hr {

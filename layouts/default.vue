@@ -6,21 +6,15 @@
 
 <style lang="scss">
 html {
-  font-family: "Helvetica Neue", Arial, sans-serif, -apple-system,
-    BlinkMacSystemFont, "Source Sans Pro", "Segoe UI", Roboto;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-  #layout {
-    background: transparent linear-gradient(0deg, #47728e 0%, #1b2831 100%) 0%
-      0% no-repeat padding-box;
-    height: 100vh;
-    p {
-      white-space: pre-wrap;
+  body {
+    font-family: Helvetica;
+    #layout {
+      background: transparent linear-gradient(0deg, #1b2831 0%, #314e60 100%) 0%
+        0% no-repeat padding-box;
+      height: 100%;
+      p {
+        white-space: pre-wrap;
+      }
     }
   }
 }
