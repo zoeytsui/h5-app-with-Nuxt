@@ -67,7 +67,7 @@ export const actions = {
 
             let members_logout = await this.$axios
                 .$get("/api?", { params: { ...members_logout_params, ...members_logout_sign } }).then(res => {
-                    if (res.ret !== 200) console.error(`${res.ret}: ${res.msg}`)
+                    if (res.ret !== 200) { console.error(`${res.ret}: ${res.msg}`); return; }
                     return console.warn("Logout:" + res.data);
                 }).catch(err => console.error(err));
 

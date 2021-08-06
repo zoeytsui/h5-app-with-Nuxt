@@ -132,8 +132,8 @@ export default {
         let deposit_index = await this.$axios
           .$get("/api?", { params: { ...deposit_index_params, ...deposit_index_sign } })
           .then(res => {
-            if (res.ret === 2206) this.forbidden_modal = true;
-            if (res.ret !== 200) { this.deposit_fail_modal = true; console.error(`${res.ret}: ${res.msg}`); }
+            if (res.ret === 2206) { this.forbidden_modal = true; return; }
+            if (res.ret !== 200) { this.deposit_fail_modal = true; console.error(`${res.ret}: ${res.msg}`); return; }
             this.$auth.$storage.setUniversal("reback_sing", res.data.reback_sing);
             this.$auth.$storage.setUniversal("order", res.data.order);
             return res.data;
@@ -162,6 +162,7 @@ export default {
           document.body.appendChild(form);
           form.submit();
         }
+
         postForm(deposit_index.url, deposit_index.form);
 
         this.$auth.$storage.setUniversal("post_request", true);

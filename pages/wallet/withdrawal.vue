@@ -139,7 +139,7 @@ export default {
       let get_deal_type = await context.$axios
         .$get("/api?", { params: { ...get_deal_type_params, ...get_deal_type_sign } })
         .then(res => {
-          if (res.ret !== 200) console.error(`${res.ret}: ${res.msg}`);
+          if (res.ret !== 200) { console.error(`${res.ret}: ${res.msg}`); return; };
           let result = res.data.shift();
           return result;
         }).catch(err => console.error(err));
@@ -192,10 +192,9 @@ export default {
         let withdraw_index = await this.$axios
           .$get("/api?", { params: { ...withdraw_index_params, ...withdraw_index_sign } })
           .then(async res => {
-            console.log(res);
-            if (res.ret === 400) this.insufficient_modal = true;
-            if (res.ret === 2206) this.forbidden_modal = true;
-            if (res.ret !== 200) this.withdrawal_fail_modal = true;
+            if (res.ret === 400) { this.insufficient_modal = true;; return; }
+            if (res.ret === 2206) { this.forbidden_modal = true;; return; }
+            if (res.ret !== 200) { this.withdrawal_fail_modal = true;; return; }
 
             this.$auth.$storage.setUniversal("order", res.data.order);
             // this.withdrawal_completed_modal = true;

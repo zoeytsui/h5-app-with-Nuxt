@@ -1,8 +1,7 @@
 const md5 = require('md5');
 const axios = require('axios');
 
-let openapi;
-process.env.NODE_ENV === "production" ? openapi = 'http://218.253.75.153:8010' : openapi = 'http://192.168.75.52:8010';
+let openapi = 'http://192.168.75.52:8010';
 
 const getTimestamp = async () => {
     try {
