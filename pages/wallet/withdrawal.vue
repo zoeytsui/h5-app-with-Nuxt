@@ -124,6 +124,17 @@ export default {
     try {
       const content = await context.$content("wallet").fetch();
 
+      let queryStr = context.query;
+      switch (true) {
+        // senario 1: query string exsited
+        case Boolean(queryStr.token):
+          context.$auth.$storage.setUniversal("token", queryStr.token);
+
+        case Boolean(queryStr.login):
+          context.$auth.$storage.setUniversal("login", queryStr.login);
+          break;
+      }
+
       // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- get_deal_type
       // http://showdoc.pubhx.com/index.php?s=/50&page_id=1216
       let get_deal_type_params = {
