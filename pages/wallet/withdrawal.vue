@@ -190,6 +190,7 @@ export default {
           currency_decimal: this.get_deal_type.decimal,
           track: this.$genTrack(),
           fee: this.transactionFee,
+          wallet_address: this.address,
           miner_fee: "",
           remark: "",
           user: "ucenter",
