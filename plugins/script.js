@@ -1,21 +1,21 @@
 export default (context, inject) => {
-        // pass csv content key
-        inject(
-            'csvHandler', (keyArr, keyStr) => {
-                try {
-                    let lang = context.store.$i18n.defaultLocale.toUpperCase();
-                    let ouputString;
-                    for (let i in keyArr) {
-                        keyArr[i].KEY === keyStr.toUpperCase()
-                            ? (ouputString = keyArr[i][`${lang}`])
-                            : undefined;
-                    }
-                    return ouputString;
-                } catch (error) {
-                    console.error(error);
+    // pass csv content key
+    inject(
+        'csvHandler', (keyArr, keyStr) => {
+            try {
+                let lang = context.store.$i18n.defaultLocale.toUpperCase();
+                let ouputString;
+                for (let i in keyArr) {
+                    keyArr[i].KEY === keyStr.toUpperCase()
+                        ? (ouputString = keyArr[i][`${lang}`])
+                        : undefined;
                 }
-            },
-        ),
+                return ouputString;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+    ),
         // gen api track with date + random string
         inject(
             'genTrack', () => {
@@ -36,7 +36,7 @@ export default (context, inject) => {
         inject(
             'numFormatter', (value) => {
                 if (!value || !Number(value)) return '0.00';
-                return new Intl.NumberFormat(`${context.i18n.defaultLocale}`).format(value)
+                return new Intl.NumberFormat(`${context.i18n.defaultLocale}`, { maximumSignificantDigits: 20 }).format(value)
             }
         )
 }
