@@ -9,7 +9,7 @@
       <p>{{keyStr('Deposit Amount')}}</p>
       <b-form @submit="onSubmit">
         <div class="input-group">
-          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" aria-label="Amount (to the nearest dollar)"></b-form-input>
+          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" step="any"></b-form-input>
           <span class="input-group-text text-light bg-transparent border-0">{{ get_deal_type.deal_type }}</span>
         </div>
 

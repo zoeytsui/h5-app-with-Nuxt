@@ -21,8 +21,7 @@
 
         <p>{{keyStr("Withdrawal Amount")}}</p>
         <div class="input-group">
-          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')"></b-form-input>
-          <!-- <b-form-invalid-feedback :state="validation">please input number</b-form-invalid-feedback> -->
+          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" step="any"></b-form-input>
           <div class="input-group-append">
             <span class="input-group-text text-light bg-transparent border-0">{{get_deal_type.deal_type}}</span>
           </div>
