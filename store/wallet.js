@@ -43,6 +43,7 @@ export const actions = {
                     userInfo.isSetFundPass = res.data.isSetFundPass;
                     userInfo.balance = Object.values(res.data.balance)[0];
                     userInfo.currency = Object.keys(res.data.balance)[0];
+                    this.$auth.$storage.setUniversal("isSetFundPass", userInfo.isSetFundPass);
                     commit('updateUserInfo', userInfo);
                 }).catch(err => console.error(err));
 

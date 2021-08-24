@@ -58,7 +58,7 @@ export default {
     },
     switchPage(page) {
       // if not set fund password go back to app
-      if (event.target.innerText === 'Withdrawal' && !this.isSetFundPass) {
+      if (event.target.innerText === 'Withdrawal' && !this.$auth.$storage.getUniversal("isSetFundPass")) {
         return window.location.href = "x60://set_fund_password_page";
       }
       return this.$router.push({ path: `/wallet/${page}` });
