@@ -43,13 +43,13 @@ export const actions = {
                     userInfo.isSetFundPass = res.data.isSetFundPass;
                     userInfo.balance = Object.values(res.data.balance)[0];
                     userInfo.currency = Object.keys(res.data.balance)[0];
-                    this.$auth.$storage.setUniversal("isSetFundPass", userInfo.isSetFundPass);
                     commit('updateUserInfo', userInfo);
+                    if (process.client) {
+                        window.localStorage.setItem("isSetFundPass", true);
+                    }
                 }).catch(err => console.error(err));
 
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) { console.error(error) }
     },
 
     async userLogout() {

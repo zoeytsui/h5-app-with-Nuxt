@@ -46,6 +46,9 @@ export default {
   },
   created() {
     this._contentHandler(this.content.body);
+
+    this.$nuxt.context.query.tnc === 'accepted' ? this.checked = true : this.checked = false;
+
     if (process.client) {
       document.getElementById("terms-of-use").style.marginBottom = `${document.getElementById("footer").offsetHeight - 1}px`;
     }
