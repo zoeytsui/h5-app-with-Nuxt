@@ -55,34 +55,40 @@ export default {
   },
   methods: {
     async _contentHandler(keyArr) {
-      const capitalLang = this.lang.toUpperCase();
-      for (let i in keyArr) {
-        Object.keys(keyArr[i]).forEach(k => k.toUpperCase());
-        let keyVal = keyArr[i].KEY;
-        switch (true) {
-          case keyVal === "TITLE":
-            this.page.title = keyArr[i][`${capitalLang}`];
-            break;
-          case keyVal === "DATE":
-            this.page.date = keyArr[i][`${capitalLang}`];
-            break;
-          case keyVal.includes("QUEST"): {
-            this.page.list.questions.push(keyArr[i][`${capitalLang}`]);
-            break;
-          }
-          case keyVal.includes("ANS"): {
-            this.page.list.answers.push(keyArr[i][`${capitalLang}`]);
-            break;
-          }
-          case keyVal === "CHECKBOX_TEXT": {
-            this.page.checkbox = keyArr[i][`${capitalLang}`];
-            break;
-          }
-          case keyVal === "BUTTON_TEXT": {
-            this.page.button = keyArr[i][`${capitalLang}`];
-            break;
+      try {
+        if (process.client) {
+          const capitalLang = this.lang.toUpperCase();
+          for (let i in keyArr) {
+            Object.keys(keyArr[i]).forEach(k => k.toUpperCase());
+            let keyVal = keyArr[i].KEY;
+            switch (true) {
+              case keyVal === "TITLE":
+                this.page.title = keyArr[i][`${capitalLang}`];
+                break;
+              case keyVal === "DATE":
+                this.page.date = keyArr[i][`${capitalLang}`];
+                break;
+              case keyVal.includes("QUEST"): {
+                this.page.list.questions.push(keyArr[i][`${capitalLang}`]);
+                break;
+              }
+              case keyVal.includes("ANS"): {
+                this.page.list.answers.push(keyArr[i][`${capitalLang}`]);
+                break;
+              }
+              case keyVal === "CHECKBOX_TEXT": {
+                this.page.checkbox = keyArr[i][`${capitalLang}`];
+                break;
+              }
+              case keyVal === "BUTTON_TEXT": {
+                this.page.button = keyArr[i][`${capitalLang}`];
+                break;
+              }
+            }
           }
         }
+      } catch (error) {
+        console.error(error);
       }
     }
   }

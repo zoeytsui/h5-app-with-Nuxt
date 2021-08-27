@@ -34,8 +34,9 @@ export default (context, inject) => {
         ),
         // Number formatting with thousand separator
         inject(
-            'numFormatter', (value) => {
-                if (!value || !Number(value)) return '0.00';
+            'thousandsSeparator', (value) => {
+                if (!value || !Number(value)) return 'Loading...';
+                value = Number.parseFloat(value).toFixed(8);
                 return new Intl.NumberFormat(`${context.i18n.defaultLocale}`, { maximumSignificantDigits: 20 }).format(value)
             }
         )

@@ -9,7 +9,7 @@
       <p>{{keyStr('Deposit Amount')}}</p>
       <b-form @submit="onSubmit">
         <div class="input-group">
-          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" step="any"></b-form-input>
+          <b-form-input step="any" pattern="[0-9]*" v-model="amount" ref="amount" type="number" :placeholder="keyStr('Amount')" :oninput="`javascript: if (String(this.value).includes('.')) { if (String(this.value).split('.')[1].length >= 8) {this.value = Number.parseFloat(this.value).toFixed(8)}}`"></b-form-input>
           <span class="input-group-text text-light bg-transparent border-0">{{ get_deal_type.deal_type }}</span>
         </div>
 
@@ -44,13 +44,13 @@ export default {
       forbidden_modal: false,
       deposit_fail_modal: false,
       deposit_completed_modal: false,
-      egPayPage: null
+      egPayPage: null,
     };
   },
   computed: {
     isDisabled() {
       return this.amount !== null && this.amount >= 0 ? false : true;
-    }
+    },
   },
   async asyncData(context) {
     try {
@@ -108,6 +108,16 @@ export default {
         prevPageURL: "/wallet",
         totalBalance: this.keyStr("Total Balance")
       });
+    },
+    decimalCount(num) {
+      // Convert to String
+      const numStr = String(num);
+      // String Contains Decimal
+      if (numStr.includes('.')) {
+        return numStr.split('.')[1].length;
+      };
+      // String Does Not Contain Decimal
+      return 0;
     },
     keyStr(key) {
       return this.$csvHandler(this.content.body, key);
@@ -212,6 +222,7 @@ export default {
                 this.$auth.$storage.setUniversal("post_request", false);
                 return;
               }
+              this.$store.commit("wallet/updateUserInfo", { balance: res.data.balance });
               this.deposit_completed_modal = true;
               this.$auth.$storage.setUniversal("post_request", false);
             }).catch(err => console.error(err));

@@ -21,7 +21,7 @@
 
         <p>{{keyStr("Withdrawal Amount")}}</p>
         <div class="input-group">
-          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" step="any"></b-form-input>
+          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" step="any" pattern="[0-9]*" :oninput="`javascript: if (String(this.value).includes('.')) { if (String(this.value).split('.')[1].length >= 8) {this.value = Number.parseFloat(this.value).toFixed(8)}}`"></b-form-input>
           <div class="input-group-append">
             <span class="input-group-text text-light bg-transparent border-0">{{get_deal_type.deal_type}}</span>
           </div>
@@ -116,7 +116,7 @@ export default {
       return Math.floor((this.amount - this.transactionFee) * fac) / fac;
     },
     isDisabled() {
-      return this.amount !== null && this.amount >= 0 ? false : true;
+      return this.amount !== null && this.amount >= 0 && this.address !== null ? false : true;
     }
   },
   async asyncData(context) {
@@ -207,8 +207,9 @@ export default {
             if (res.ret === 2206) { this.forbidden_modal = true;; return; }
             if (res.ret !== 200) { this.withdrawal_fail_modal = true;; return; }
 
-            this.$auth.$storage.setUniversal("order", res.data.order);
             // this.withdrawal_completed_modal = true;
+            this.$auth.$storage.setUniversal("order", res.data.order);
+            this.$store.commit("wallet/updateUserInfo", { balance: res.data.balance });
             window.location.href = "x60://check_fund_password_page";
           });
       } catch (error) {

@@ -45,7 +45,7 @@ export const actions = {
                     userInfo.currency = Object.keys(res.data.balance)[0];
                     commit('updateUserInfo', userInfo);
                     if (process.client) {
-                        window.localStorage.setItem("isSetFundPass", true);
+                        window.localStorage.setItem("isSetFundPass", userInfo.isSetFundPass);
                     }
                 }).catch(err => console.error(err));
 

@@ -17,7 +17,7 @@ export default {
       return this.$store.state.wallet.userInfo.currency;
     },
     balance() {
-      return this.$numFormatter(this.$store.state.wallet.userInfo.balance);
+      return this.$thousandsSeparator(this.$store.state.wallet.userInfo.balance);
     }
   },
   created() {
