@@ -22,7 +22,19 @@ export default {
   data() {
     return {
       checked: false,
-      page: {
+    };
+  },
+  computed: {
+    isButtonDisabled() {
+      return this.checked ? false : true;
+    }
+  },
+  async asyncData({ $content, route, i18n, params }) {
+    try {
+      const lang = i18n.getLocaleCookie().toUpperCase();
+      const content = await (await $content("docs/terms-of-use").fetch()).body;
+
+      let page = {
         title: null,
         date: null,
         list: {
@@ -31,69 +43,51 @@ export default {
         },
         checkbox: null,
         button: null
+      };
+
+      for (let i in content) {
+        Object.keys(content[i]).forEach(k => k.toUpperCase());
+        let keyVal = content[i].KEY;
+        switch (true) {
+          case keyVal === "TITLE":
+            page.title = content[i][`${lang}`];
+            break;
+          case keyVal === "DATE":
+            page.date = content[i][`${lang}`];
+            break;
+          case keyVal.includes("QUEST"): {
+            page.list.questions.push(content[i][`${lang}`]);
+            break;
+          }
+          case keyVal.includes("ANS"): {
+            page.list.answers.push(content[i][`${lang}`]);
+            break;
+          }
+          case keyVal === "CHECKBOX_TEXT": {
+            page.checkbox = content[i][`${lang}`];
+            break;
+          }
+          case keyVal === "BUTTON_TEXT": {
+            page.button = content[i][`${lang}`];
+            break;
+          }
+        }
       }
-    };
-  },
-  computed: {
-    isButtonDisabled() {
-      return this.checked ? false : true;
-    }
-  },
-  async asyncData({ $content, route, i18n }) {
-    const lang = i18n.getLocaleCookie();
-    const content = await $content("docs", route.path).fetch();
-    return { content, lang };
+
+      return { page };
+
+    } catch (error) { console.error(error) }
   },
   created() {
-    this._contentHandler(this.content.body);
-
     this.$nuxt.context.query.tnc === 'accepted' ? this.checked = true : this.checked = false;
 
     if (process.client) {
       document.getElementById("terms-of-use").style.marginBottom = `${document.getElementById("footer").offsetHeight - 1}px`;
     }
   },
-  methods: {
-    async _contentHandler(keyArr) {
-      try {
-        if (process.client) {
-          const capitalLang = this.lang.toUpperCase();
-          for (let i in keyArr) {
-            Object.keys(keyArr[i]).forEach(k => k.toUpperCase());
-            let keyVal = keyArr[i].KEY;
-            switch (true) {
-              case keyVal === "TITLE":
-                this.page.title = keyArr[i][`${capitalLang}`];
-                break;
-              case keyVal === "DATE":
-                this.page.date = keyArr[i][`${capitalLang}`];
-                break;
-              case keyVal.includes("QUEST"): {
-                this.page.list.questions.push(keyArr[i][`${capitalLang}`]);
-                break;
-              }
-              case keyVal.includes("ANS"): {
-                this.page.list.answers.push(keyArr[i][`${capitalLang}`]);
-                break;
-              }
-              case keyVal === "CHECKBOX_TEXT": {
-                this.page.checkbox = keyArr[i][`${capitalLang}`];
-                break;
-              }
-              case keyVal === "BUTTON_TEXT": {
-                this.page.button = keyArr[i][`${capitalLang}`];
-                break;
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
 };
 </script>
+
 <style lang="scss" scoped>
 #terms-of-use {
   padding: 2rem;

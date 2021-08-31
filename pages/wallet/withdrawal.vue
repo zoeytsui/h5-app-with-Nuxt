@@ -21,7 +21,7 @@
 
         <p>{{keyStr("Withdrawal Amount")}}</p>
         <div class="input-group">
-          <b-form-input v-model="amount" type="number" :placeholder="keyStr('Amount')" step="any" pattern="[0-9]*" :oninput="`javascript: if (String(this.value).includes('.')) { if (String(this.value).split('.')[1].length >= 8) {this.value = Number.parseFloat(this.value).toFixed(8)}}`"></b-form-input>
+          <b-form-input v-model="amount" type="number" pattern="[0-9]*" step="any" :placeholder="keyStr('Amount')" :oninput="`javascript: if (String(this.value).includes('.')) { if (String(this.value).split('.')[1].length >= 8) {this.value = Number.parseFloat(this.value).toFixed(8)}}`"></b-form-input>
           <div class="input-group-append">
             <span class="input-group-text text-light bg-transparent border-0">{{get_deal_type.deal_type}}</span>
           </div>
@@ -81,6 +81,7 @@ export default {
   layout: "wallet",
   data() {
     return {
+      track: null,
       amount: null,
       address: null,
       QRCodePic: null,
@@ -116,7 +117,7 @@ export default {
       return Math.floor((this.amount - this.transactionFee) * fac) / fac;
     },
     isDisabled() {
-      return this.amount !== null && this.amount >= 0 && this.address !== null ? false : true;
+      return this.amount !== null && this.amount >= 0 && this.address !== null && this.address !== '' ? false : true;
     }
   },
   async asyncData(context) {
@@ -177,8 +178,11 @@ export default {
     async onSubmit(event) {
       event.preventDefault();
       if (this.amount <= 0) return;
-
+      console.log('this.address', this.address === '');
+      console.log('this.amount', this.amount);
       try {
+        this.track = this.$genTrack();
+        this.$auth.$storage.setUniversal("track", this.track);
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- withdraw_index
         // http://showdoc.pubhx.com/index.php?s=/50&page_id=1217
         let withdraw_index_params = {
@@ -187,7 +191,7 @@ export default {
           deal_type: this.get_deal_type.deal_type,
           currency_name: this.get_deal_type.name,
           currency_decimal: this.get_deal_type.decimal,
-          track: this.$genTrack(),
+          track: this.$auth.$storage.getUniversal("track"),
           fee: this.transactionFee,
           wallet_address: this.address,
           miner_fee: "",
@@ -200,18 +204,19 @@ export default {
 
         let withdraw_index_sign = await this.$axios.$post("/lib/sign", withdraw_index_params);
 
-        let withdraw_index = await this.$axios
-          .$get("/api?", { params: { ...withdraw_index_params, ...withdraw_index_sign } })
-          .then(async res => {
-            if (res.ret === 400) { this.insufficient_modal = true;; return; }
-            if (res.ret === 2206) { this.forbidden_modal = true;; return; }
-            if (res.ret !== 200) { this.withdrawal_fail_modal = true;; return; }
+        window.location.href = `x60://check_fund_password_page?parameter="?${this.$objectToQueryString({ ...withdraw_index_params, ...withdraw_index_sign })}"`;
+        // let withdraw_index = await this.$axios
+        //   .$get("/api?", { params: { ...withdraw_index_params, ...withdraw_index_sign } })
+        //   .then(async res => {
+        //     if (res.ret === 400) return this.insufficient_modal = true;
+        //     if (res.ret === 2206) return this.forbidden_modal = true;
+        //     if (res.ret !== 200) return this.withdrawal_fail_modal = true;
 
-            // this.withdrawal_completed_modal = true;
-            this.$auth.$storage.setUniversal("order", res.data.order);
-            this.$store.commit("wallet/updateUserInfo", { balance: res.data.balance });
-            window.location.href = "x60://check_fund_password_page";
-          });
+        //     // this.withdrawal_completed_modal = true;
+        //     this.$auth.$storage.setUniversal("order", res.data.order);
+        //     this.$store.commit("wallet/updateUserInfo", { balance: res.data.balance });
+        //     window.location.href = "x60://check_fund_password_page";
+        //   });
       } catch (error) {
         console.error(error);
       }

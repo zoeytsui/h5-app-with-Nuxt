@@ -15,57 +15,46 @@
 
 <script>
 export default {
-  data() {
-    return {
-      page: {
+  async asyncData({ $content, i18n, route }) {
+    try {
+
+      const lang = i18n.locale.toUpperCase();
+      const content = await (await $content("docs/help-and-support").fetch()).body;
+
+      let page = {
         title: null,
         description: null,
         list: {
           questions: [],
           answers: []
         }
-      }
-    };
-  },
-  async asyncData({ $content, i18n, route }) {
-    const lang = i18n.getLocaleCookie();
-    const content = await $content("docs", route.path).fetch();
-    return { content, lang };
-  },
-  created() {
-    this._contentHandler(this.content.body);
-  },
-  methods: {
-    async _contentHandler(keyArr) {
-      try {
-        if (process.client) {
-          const capitalLang = this.lang.toUpperCase();
-          for (let i in keyArr) {
-            Object.keys(keyArr[i]).forEach(k => k.toUpperCase());
-            let keyVal = keyArr[i].KEY;
-            switch (true) {
-              case keyVal === "TITLE":
-                this.page.title = keyArr[i][`${capitalLang}`];
-                break;
-              case keyVal === "DESCRIPTION":
-                this.page.description = keyArr[i][`${capitalLang}`];
-                break;
-              case keyVal.includes("QUEST"): {
-                this.page.list.questions.push(keyArr[i][`${capitalLang}`]);
-                break;
-              }
-              case keyVal.includes("ANS"): {
-                this.page.list.answers.push(keyArr[i][`${capitalLang}`]);
-                break;
-              }
-            }
+      };
+
+      for (let i in content) {
+        Object.keys(content[i]).forEach(k => k.toUpperCase());
+        let keyVal = content[i].KEY;
+        switch (true) {
+          case keyVal === "TITLE":
+            page.title = content[i][`${lang}`];
+            break;
+          case keyVal === "DESCRIPTION":
+            page.description = content[i][`${lang}`];
+            break;
+          case keyVal.includes("QUEST"): {
+            page.list.questions.push(content[i][`${lang}`]);
+            break;
+          }
+          case keyVal.includes("ANS"): {
+            page.list.answers.push(content[i][`${lang}`]);
+            break;
           }
         }
-      } catch (error) {
-        console.error(error);
       }
-    }
-  }
+
+      return { page };
+
+    } catch (error) { console.error(error) }
+  },
 };
 </script>
 <style lang="scss" scoped>
