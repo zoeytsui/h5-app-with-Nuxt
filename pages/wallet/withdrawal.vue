@@ -117,7 +117,7 @@ export default {
       return Math.floor((this.amount - this.transactionFee) * fac) / fac;
     },
     isDisabled() {
-      return this.amount !== null && this.amount >= 0 && this.address !== null && this.address !== '' ? false : true;
+      return this.amount !== null && this.amount >= 0 && this.amount !== '' && this.address !== null && this.address !== '' ? false : true;
     }
   },
   async asyncData(context) {
@@ -178,8 +178,7 @@ export default {
     async onSubmit(event) {
       event.preventDefault();
       if (this.amount <= 0) return;
-      console.log('this.address', this.address === '');
-      console.log('this.amount', this.amount);
+
       try {
         this.track = this.$genTrack();
         this.$auth.$storage.setUniversal("track", this.track);
