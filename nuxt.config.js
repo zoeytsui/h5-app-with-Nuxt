@@ -89,7 +89,7 @@ export default {
   },
 
   server: {
-    host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : process.env.IP,
-    port: process.env.NODE_ENV === 'production' ? '8001' : process.env.PORT
+    host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
+    port: process.env.NODE_ENV === 'production' ? '8001' : '7070'
   }
 }
