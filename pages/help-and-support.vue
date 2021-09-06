@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  async asyncData({ $content, i18n, route }) {
+  async asyncData({ $content, i18n }) {
     try {
 
       const lang = i18n.locale.toUpperCase();

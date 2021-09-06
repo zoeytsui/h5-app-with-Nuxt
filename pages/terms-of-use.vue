@@ -29,9 +29,9 @@ export default {
       return this.checked ? false : true;
     }
   },
-  async asyncData({ $content, route, i18n, params }) {
+  async asyncData({ $content, i18n }) {
     try {
-      const lang = i18n.getLocaleCookie().toUpperCase();
+      const lang = i18n.locale.toUpperCase();
       const content = await (await $content("docs/terms-of-use").fetch()).body;
 
       let page = {
@@ -78,12 +78,10 @@ export default {
 
     } catch (error) { console.error(error) }
   },
-  created() {
+  mounted() {
     this.$nuxt.context.query.tnc === 'accepted' ? this.checked = true : this.checked = false;
 
-    if (process.client) {
-      document.getElementById("terms-of-use").style.marginBottom = `${document.getElementById("footer").offsetHeight - 1}px`;
-    }
+    document.getElementById("terms-of-use").style.marginBottom = `${document.getElementById("footer").offsetHeight - 1}px`;
   },
 };
 </script>
