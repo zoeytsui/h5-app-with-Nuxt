@@ -9,7 +9,7 @@
       <p>{{keyStr('Deposit Amount')}}</p>
       <b-form @submit="onSubmit">
         <div class="input-group">
-          <b-form-input type="number" pattern="[0-9]*" step="any" v-model="amount" ref="amount" :placeholder="keyStr('Amount')" :oninput="`javascript: if (String(this.value).includes('.')) { if (String(this.value).split('.')[1].length >= 8) {this.value = Number.parseFloat(this.value).toFixed(8)}}`"></b-form-input>
+          <b-form-input v-model="amount" type="number" pattern="[0-9]*" step="any" :placeholder="keyStr('Amount')" :oninput="`javascript: if (this.value.indexOf('.') >= 0) { this.value = (this.value.substr(0, this.value.indexOf('.')) + this.value.substr(this.value.indexOf('.'), 9))}`"></b-form-input>
           <span class="input-group-text text-light bg-transparent border-0">{{ get_deal_type.deal_type }}</span>
         </div>
 

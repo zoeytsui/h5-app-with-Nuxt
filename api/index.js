@@ -3,7 +3,7 @@ const app = express();
 const lib = require('./_lib.js')
 
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 app.all('/sign', (req, res) => {
   res.json({ sign: lib.getSign(req.body) });
