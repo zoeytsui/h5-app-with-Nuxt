@@ -117,7 +117,7 @@ export default {
       return Math.floor((this.amount - this.transactionFee) * fac) / fac;
     },
     isDisabled() {
-      return this.amount !== null && this.amount >= 0 && this.amount !== '' && this.address !== null && this.address !== '' ? false : true;
+      return this.amount !== null && this.amount > this.transactionFee && this.amount !== '' && this.address !== null && this.address !== '' ? false : true;
     }
   },
   async asyncData(context) {

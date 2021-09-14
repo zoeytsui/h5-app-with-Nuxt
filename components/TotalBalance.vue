@@ -1,6 +1,6 @@
 
 <template>
-  <div class="totalbalance pt-3">
+  <div class="totalbalance pt-3 text-center text-white">
     <h6>{{ `${totalBalance}:` }}</h6>
     <h1>{{ balance }}</h1>
     <h6>{{ currency }}</h6>
@@ -55,10 +55,8 @@ export default {
 
 <style lang="scss" scoped>
 .totalbalance {
-  text-align: center;
-  margin: 0 auto;
-  color: #fff;
-  width: 80%;
+  word-wrap: break-word;
+  background: transparent;
   h1 {
     color: #2beae2;
     font-weight: 600;
