@@ -52,6 +52,11 @@ export default {
       return this.amount !== null && this.amount >= 0 ? false : true;
     },
   },
+  watch: {
+    amount() {
+      return this.amount = this.amount.replace(/^0+/, '')
+    }
+  },
   async asyncData(context) {
     try {
       const content = await context.$content("wallet").fetch();

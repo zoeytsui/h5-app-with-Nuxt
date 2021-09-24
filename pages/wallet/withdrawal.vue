@@ -21,7 +21,7 @@
 
         <p>{{keyStr("Withdrawal Amount")}}</p>
         <div class="input-group">
-          <b-form-input v-model="amount" type="number" pattern="[0-9]*" step="any" :placeholder="keyStr('Amount')" :oninput="`javascript: if (this.value.indexOf('.') >= 0) { this.value = (this.value.substr(0, this.value.indexOf('.')) + this.value.substr(this.value.indexOf('.'), 9))}`"></b-form-input>
+          <b-form-input v-model="amount" type="number" inputmode="numeric" pattern="[-+]?[0-9]*[.,]?[0-9]+" step="any" :placeholder="keyStr('Amount')" :oninput="`javascript: if (this.value.indexOf('.') >= 0) { this.value = (this.value.substr(0, this.value.indexOf('.')) + this.value.substr(this.value.indexOf('.'), 9))}`"></b-form-input>
           <div class="input-group-append">
             <span class="input-group-text text-light bg-transparent border-0">{{get_deal_type.deal_type}}</span>
           </div>
@@ -82,7 +82,7 @@ export default {
   data() {
     return {
       track: null,
-      amount: null,
+      amount: '',
       address: null,
       QRCodePic: null,
       forbidden_modal: false,
@@ -117,7 +117,12 @@ export default {
       return Math.floor((this.amount - this.transactionFee) * fac) / fac;
     },
     isDisabled() {
-      return this.amount !== null && this.amount > this.transactionFee && this.amount !== '' && this.address !== null && this.address !== '' ? false : true;
+      return this.amount !== null && Number(this.amount) > this.transactionFee && this.amount !== '' && this.address !== null && this.address !== '' ? false : true;
+    }
+  },
+  watch: {
+    amount() {
+      return this.amount = this.amount.replace(/^0+/, '')
     }
   },
   async asyncData(context) {
