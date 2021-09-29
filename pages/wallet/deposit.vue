@@ -54,7 +54,7 @@ export default {
   },
   watch: {
     amount() {
-      return this.amount = this.amount.replace(/^0+/, '')
+      return this.amount = this.amount.replace(/^00+/, '')
     }
   },
   async asyncData(context) {
