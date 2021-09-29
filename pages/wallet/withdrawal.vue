@@ -99,6 +99,9 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    amount() {
+      return this.amount = this.amount.replace(/^00+/, '')
     }
   },
   computed: {
@@ -118,11 +121,6 @@ export default {
     },
     isDisabled() {
       return this.amount !== null && Number(this.amount) > this.transactionFee && this.amount !== '' && this.address !== null && this.address !== '' ? false : true;
-    }
-  },
-  watch: {
-    amount() {
-      return this.amount = this.amount.replace(/^00+/, '')
     }
   },
   async asyncData(context) {
