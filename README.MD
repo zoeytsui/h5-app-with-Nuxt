@@ -1,5 +1,3 @@
-# ucenter.9999server.com
-
 ## Build Setup
 
 ```bash
